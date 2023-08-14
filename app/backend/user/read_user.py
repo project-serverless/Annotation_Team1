@@ -9,14 +9,18 @@ def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(table_name)
     
-    serialNum = event['serialNum']
-    
+    userSerialNum = event['userSerialNum']
+
     response = table.query(
-        KeyConditionExpression=Key('serialNum').eq(serialNum)
+        KeyConditionExpression=Key('userSerialNum').eq(userSerialNum)
     )
     
+    convert_regular_json = json.loads(json.dumps(response))
+
     return {
         'statusCode': 200,
-        'body': json.dumps(f'{serialNum}info')
+        'body': convert_regular_json["Items"]
     }
 
+#항목 개수 : len(convert_regular_json["Items"][0][type])
+#항목 상세정보 : len(convert_regular_json["Items"][0][type]

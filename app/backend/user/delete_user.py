@@ -9,17 +9,16 @@ def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(table_name)
     
-    serialNum = event['serialNum']
+    userSerialNum = event['userSerialNum']
     
     table.delete_item(
         
         Key={
-            'serialNum':serialNum
-        }
-        
+            'userSerialNum':userSerialNum
+        } 
     )
     
     return {
         'statusCode': 200,
-        'body': json.dumps(f'{serialNum} delete!')
+        'body': json.dumps(f'{userSerialNum} delete!')
     }

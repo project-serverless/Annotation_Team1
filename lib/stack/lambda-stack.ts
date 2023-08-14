@@ -254,7 +254,7 @@ export class Todo3DaysApiStack extends cdk.Stack {
       methodOptions
     );
 
-    const loginResource = api.root.addResource("login");
+    const loginResource = api.root.addResource("readUser");
     loginResource.addMethod(
       "POST",
       new LambdaIntegration(readUserFunction),
@@ -291,7 +291,7 @@ export class Todo3DaysApiStack extends cdk.Stack {
 
     const readGoingTodoResource = api.root.addResource("readTodo");
     readGoingTodoResource.addMethod(
-      "GET",
+      "POST",
       new LambdaIntegration(readGoingTodoFunction),
       methodOptions
     );

@@ -12,27 +12,27 @@ def getTable():
 
     return table
 
-#todoSerialNum 중복 검사 
+#userSerialNum 중복 검사 
 def serialNumCheck():
     
     table = getTable()
 
-    serialNum  = "user"+str(randint(1,999999)).zfill(6)
+    userSerialNum  = "user"+str(randint(1,999999)).zfill(6)
 
     response = table.query(
-        KeyConditionExpression=Key('serialNum').eq(serialNum)
+        KeyConditionExpression=Key('userSerialNum').eq(userSerialNum)
     )
 
     convert_regular_json = json.loads(json.dumps(response))
     if convert_regular_json["Items"] :
-        serialNum  = "user"+str(randint(1,999999)).zfill(6)
-        return table,serialNum
+        userSerialNum  = "user"+str(randint(1,999999)).zfill(6)
+        return table,userSerialNum
     else : 
-        return table,serialNum
+        return table,userSerialNum
 
 def lambda_handler(event, context):
 
-    table,serialNum = serialNumCheck()
+    table,userSerialNum = serialNumCheck()
 
     nickName=event['nickName']
     infoMessage = event["infoMessage"]
@@ -40,7 +40,7 @@ def lambda_handler(event, context):
     userId=event['userId']
 
     item = {
-        "serialNum": serialNum,
+        "userSerialNum": userSerialNum,
         "infoMessage":infoMessage,
         "nickName": nickName,
         "password":password,

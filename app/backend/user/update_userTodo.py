@@ -9,7 +9,7 @@ def lambda_handler(event,context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(table_name)
 
-    serialNum = event['serialNum']
+    userSerialNum = event['userSerialNum']
     date1=event['date1']
     result1=event['result1']
     date2=event['date2']
@@ -18,12 +18,12 @@ def lambda_handler(event,context):
     result3=event['result3']
     goalContent=event['goalContent']
     month=event['month']
-    goalNum = 'g'+str(0)
+    goalNum = str(1)
     
     table.update_item(
         
         Key={
-            'serialNum':event['serialNum']
+            'userSerialNum':event['userSerialNum']
         },
         UpdateExpression='set #goalList=:goalSetting',
         ExpressionAttributeNames={
@@ -51,8 +51,6 @@ def lambda_handler(event,context):
                                     'date':date3,
                                     'status':result3
                                 }
-                                
-                            
                         },
                         'goalContent':goalContent,
                         'month':month
@@ -63,5 +61,5 @@ def lambda_handler(event,context):
     
     return {
         'statusCode': 200,
-        'body': json.dumps(f'{serialNum} update!')
+        'body': json.dumps(f'{userSerialNum} update!')
     }

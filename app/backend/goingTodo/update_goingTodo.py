@@ -10,18 +10,44 @@ def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(table_name)
 
-    response = table.query(
-        KeyConditionExpression= Key('userSerialNum').eq(event['userSerialNum']) & Key('finalDate').eq(event['nowdate']),
-        FilterExpression="#status = :statusCode",
+    #update todoSerialNum, level, status, date
+    todoSerialNum = event['todoSerialNum']
+    Level = event['Level']
+    status = event['status']
+    date=event['date']
+
+    if Level == "Third":
+        table.update_item(
+            Key={
+            'todoSerialNum': todoSerialNum
+            },
+            UpdateExpression="set #status=:statusCode",
+            ExpressionAttributeNames={
+                "#status":"status"
+            },
+            ExpressionAttributeValues={
+                ":statusCode":True
+            }
+        )
+
+    response = table.update_item(
+        Key={
+            'todoSerialNum': todoSerialNum
+        },
+        UpdateExpression="set #date.#level=:data",
         ExpressionAttributeNames={
-            '#status':event['status']
+            "#date":"date",
+            "#level":Level
         },
         ExpressionAttributeValues={
-            ':statusCode':True,
+            ":data":{
+                "date":date,
+                "status":status
+            }
         }
     )
-    
+
     return {
         "statusCode":200,
-        "body" : json.dumps(response)
+        "body" : json.dumps("Success")
     }

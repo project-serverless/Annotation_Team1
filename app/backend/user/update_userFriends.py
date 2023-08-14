@@ -8,12 +8,12 @@ def lambda_handler(event,context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(table_name)
     
-    serialNum = event['serialNum']
+    userSerialNum = event['userSerialNum']
     friendId=event['friendId']
     
     table.update_item(
         Key={
-            'serialNum':serialNum
+            'userSerialNum':userSerialNum
         },
         UpdateExpression='set #friends= :friend',
         ExpressionAttributeNames={
@@ -26,5 +26,5 @@ def lambda_handler(event,context):
     
     return {
         'statusCode': 200,
-        'body': json.dumps(f'{serialNum} update!')
+        'body': json.dumps(f'{userSerialNum} update!')
     }

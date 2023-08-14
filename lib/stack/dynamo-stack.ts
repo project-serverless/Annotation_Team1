@@ -21,7 +21,7 @@ export class Todo3DaysCdkDynamoStack extends cdk.Stack {
     this.User = new Table(this, `${SYSTEM_NAME}-user-table`, {
       tableName: `${getAccountUniqueName(props.context)}-user-table`,
       partitionKey: {
-        name: "serialNum",
+        name: "userSerialNum",
         type: AttributeType.STRING,
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
@@ -31,10 +31,6 @@ export class Todo3DaysCdkDynamoStack extends cdk.Stack {
       tableName: `${getAccountUniqueName(props.context)}-goingtodo-table`,
       partitionKey: {
         name: "todoSerialNum",
-        type: AttributeType.STRING,
-      },
-      sortKey: {
-        name: "userSerialNum",
         type: AttributeType.STRING,
       },
       billingMode: BillingMode.PAY_PER_REQUEST,

@@ -13,9 +13,10 @@ def getTable():
     return table
 
 #todoSerialNum 중복 검사 
-def serialNumCheck(todoSerialNum):
+def serialNumCheck(userSerialNum):
     
     table = getTable()
+    todoSerialNum = "todo"+str(randint(1,999999)).zfill(6)
 
     response = table.query(
         KeyConditionExpression=Key('todoSerialNum').eq(todoSerialNum)
@@ -23,25 +24,21 @@ def serialNumCheck(todoSerialNum):
 
     convert_regular_json = json.loads(json.dumps(response))
     if not convert_regular_json["Items"] :
-        return True
+        todoSerialNum = "todo"+str(randint(1,999999)).zfill(6)
+        return table,todoSerialNum
     else : 
-        return False
+        return table,todoSerialNum
     
 #create todo 
 def lambda_handler(event, context):
-
-    table = getTable()
-
+    
     userSerialNum = event['userSerialNum']
-    todoSerialNum = "todo"+str(randint(1,999999)).zfill(6)
-    while(serialNumCheck(todoSerialNum)):
-        todoSerialNum = "todo"+str(randint(1,999999)).zfill(6)
+    table,todoSerialNum = serialNumCheck(userSerialNum)
 
     item = {
-        'userSerialNum': event['userSerialNum'],
+        'userSerialNum': userSerialNum,
         'finalDate':event['finalDate'],
         'todoSerialNum':todoSerialNum,
-
         'date':
                 {
                     'First':{
