@@ -3,14 +3,17 @@ import { Construct } from "constructs";
 import { Todo3DaysCdkS3Stack } from "./stack/s3-stack";
 import { Todo3DaysApiStack } from "./stack/lambda-stack";
 import { Todo3DaysCdkDynamoStack } from "./stack/dynamo-stack";
+import { Todo3DaysCdkCognitoStack } from "./stack/cognito-stack";
 import { Account } from "./config/accounts";
 import { SYSTEM_NAME } from "./config/commons";
+
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export interface Todo3DaysCdkStackProps extends cdk.StackProps {
   context: Account;
   s3Stack?: Todo3DaysCdkS3Stack;
   dynamoStack?: Todo3DaysCdkDynamoStack;
+  cognitoStack?: Todo3DaysCdkCognitoStack;
 }
 
 export class Todo3DaysCdkStack extends cdk.Stack {
@@ -30,6 +33,13 @@ export class Todo3DaysCdkStack extends cdk.Stack {
       props
     );
     props.dynamoStack = dynamoStack;
+
+    const cognitoStack = new Todo3DaysCdkCognitoStack(
+      this,
+      `${SYSTEM_NAME}-cognitoStack`,
+      props
+    );
+    props.cognitoStack = cognitoStack;
 
     new Todo3DaysApiStack(this, `${SYSTEM_NAME}-apiStack`, props);
   }
