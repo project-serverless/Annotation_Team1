@@ -3,6 +3,7 @@
 *.d.ts
 node_modules
 accounts.ts
+accounts.py
 
 # CDK asset staging directory
 .cdk.staging

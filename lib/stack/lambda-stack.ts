@@ -2,7 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import { getAccountUniqueName } from "../config/accounts";
-import { Todo3DaysCdkStackProps } from "../hello-cdk-stack";
+import { ChallengeCdkStackProps } from "../hello-cdk-stack";
 import { SYSTEM_NAME } from "../config/commons";
 import { PythonFunction } from "@aws-cdk/aws-lambda-python-alpha";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
@@ -25,8 +25,8 @@ import {
 } from "aws-cdk-lib/aws-apigateway";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
 
-export class Todo3DaysApiStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: Todo3DaysCdkStackProps) {
+export class ChallengeApiStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: ChallengeCdkStackProps) {
     super(scope, id, props);
 
     const lambdaRole = new Role(this, `${SYSTEM_NAME}-lambda-role`, {
@@ -60,6 +60,40 @@ export class Todo3DaysApiStack extends cdk.Stack {
       }
     );
 
+    //사용자 확인
+    const confirmUserFunction = new PythonFunction(
+      this,
+      `${SYSTEM_NAME}-confirm-user`,
+      {
+        functionName: `${getAccountUniqueName(props.context)}-confirm-user`,
+        entry: path.join("C://Users//annie/hello-cdk/app/backend/user"),
+        index: "signup_confirm.py",
+        handler: "lambda_handler",
+        runtime: Runtime.PYTHON_3_10,
+        role: lambdaRole,
+        environment: {
+          TABLE_NAME: props.dynamoStack!.User.tableName,
+        },
+      }
+    );
+
+    //사용자 로그인
+    const loginUserFunction = new PythonFunction(
+      this,
+      `${SYSTEM_NAME}-login-user`,
+      {
+        functionName: `${getAccountUniqueName(props.context)}-login-user`,
+        entry: path.join("C://Users//annie/hello-cdk/app/backend/user"),
+        index: "login_user.py",
+        handler: "lambda_handler",
+        runtime: Runtime.PYTHON_3_10,
+        role: lambdaRole,
+        environment: {
+          TABLE_NAME: props.dynamoStack!.User.tableName,
+        },
+      }
+    );
+
     //사용자 조회
     const readUserFunction = new PythonFunction(
       this,
@@ -71,42 +105,6 @@ export class Todo3DaysApiStack extends cdk.Stack {
         handler: "lambda_handler",
         runtime: Runtime.PYTHON_3_10,
         role: lambdaRole,
-        environment: {
-          TABLE_NAME: props.dynamoStack!.User.tableName,
-        },
-      }
-    );
-
-    //사용자 정보 업데이트 - friend 추가
-    const updateUserFriendFunction = new PythonFunction(
-      this,
-      `${SYSTEM_NAME}-update-userfriends`,
-      {
-        functionName: `${getAccountUniqueName(
-          props.context
-        )}-update-userfriends`,
-        entry: path.join("C://Users//annie/hello-cdk/app/backend/user"),
-        index: "update_userFriends.py",
-        handler: "lambda_handler",
-        runtime: Runtime.PYTHON_3_10,
-        role: lambdaRole,
-        environment: {
-          TABLE_NAME: props.dynamoStack!.User.tableName,
-        },
-      }
-    );
-
-    //사용자 정보 업데이트 - Todo 추가
-    const updateUserTodoFunction = new PythonFunction(
-      this,
-      `${SYSTEM_NAME}-update-usertodo`,
-      {
-        functionName: `${getAccountUniqueName(props.context)}-update-usertodo`,
-        entry: path.join("C://Users//annie/hello-cdk/app/backend/user"),
-        runtime: Runtime.PYTHON_3_10,
-        role: lambdaRole,
-        index: "update_userTodo.py", // file name
-        handler: "lambda_handler", // function name
         environment: {
           TABLE_NAME: props.dynamoStack!.User.tableName,
         },
@@ -131,76 +129,76 @@ export class Todo3DaysApiStack extends cdk.Stack {
     );
 
     //TODO 생성
-    const createGoingTodoFunction = new PythonFunction(
+    const createChallengeFunction = new PythonFunction(
       this,
-      `${SYSTEM_NAME}-create-goingTodo`,
+      `${SYSTEM_NAME}-create-challenge`,
       {
-        functionName: `${getAccountUniqueName(props.context)}-create-goingTodo`,
-        entry: path.join("C://Users//annie/hello-cdk/app/backend/goingTodo"),
+        functionName: `${getAccountUniqueName(props.context)}-create-challenge`,
+        entry: path.join("C://Users//annie/hello-cdk/app/backend/challenge"),
         runtime: Runtime.PYTHON_3_10,
         role: lambdaRole,
-        index: "create_goingTodo.py", // file name
+        index: "create_challenge.py", // file name
         handler: "lambda_handler", // function name
         environment: {
-          TABLE_NAME: props.dynamoStack!.goingTodo.tableName,
+          TABLE_NAME: props.dynamoStack!.challenge.tableName,
         },
       }
     );
 
     //TODO 조회
-    const readGoingTodoFunction = new PythonFunction(
+    const readChallengeFunction = new PythonFunction(
       this,
-      `${SYSTEM_NAME}-read-goingTodo`,
+      `${SYSTEM_NAME}-read-challenge`,
       {
-        functionName: `${getAccountUniqueName(props.context)}-read-goingTodo`,
-        entry: path.join("C://Users//annie/hello-cdk/app/backend/goingTodo"),
+        functionName: `${getAccountUniqueName(props.context)}-read-challenge`,
+        entry: path.join("C://Users//annie/hello-cdk/app/backend/challenge"),
         runtime: Runtime.PYTHON_3_10,
         role: lambdaRole,
-        index: "read_goingTodo.py", // file name
+        index: "read_challenge.py", // file name
         handler: "lambda_handler", // function name
         environment: {
-          TABLE_NAME: props.dynamoStack!.goingTodo.tableName,
+          TABLE_NAME: props.dynamoStack!.challenge.tableName,
         },
       }
     );
 
     //TODO 업데이트
-    const updateGoingTodoTodoFunction = new PythonFunction(
+    const updateChallengeFunction = new PythonFunction(
       this,
-      `${SYSTEM_NAME}-update-goingTodo`,
+      `${SYSTEM_NAME}-update-challenge`,
       {
-        functionName: `${getAccountUniqueName(props.context)}-update-goingTodo`,
-        entry: path.join("C://Users//annie/hello-cdk/app/backend/goingTodo"),
+        functionName: `${getAccountUniqueName(props.context)}-update-challenge`,
+        entry: path.join("C://Users//annie/hello-cdk/app/backend/challenge"),
         runtime: Runtime.PYTHON_3_10,
         role: lambdaRole,
-        index: "update_goingTodo.py", // file name
+        index: "update_challenge.py", // file name
         handler: "lambda_handler", // function name
         environment: {
-          TABLE_NAME: props.dynamoStack!.goingTodo.tableName,
+          TABLE_NAME: props.dynamoStack!.challenge.tableName,
         },
       }
     );
 
     //TODO 삭제 ->
-    const deleteGoingTodoTodoFunction = new PythonFunction(
+    const deleteChallengeFunction = new PythonFunction(
       this,
-      `${SYSTEM_NAME}-delete-goingTodo`,
+      `${SYSTEM_NAME}-delete-challenge`,
       {
-        functionName: `${getAccountUniqueName(props.context)}-delete-goingTodo`,
-        entry: path.join("C://Users//annie/hello-cdk/app/backend/goingTodo"),
+        functionName: `${getAccountUniqueName(props.context)}-delete-challenge`,
+        entry: path.join("C://Users//annie/hello-cdk/app/backend/challenge"),
         runtime: Runtime.PYTHON_3_10,
         role: lambdaRole,
-        index: "delete_goingTodo.py", // file name
+        index: "delete_challenge.py", // file name
         handler: "lambda_handler", // function name
         environment: {
-          TABLE_NAME: props.dynamoStack!.goingTodo.tableName,
+          TABLE_NAME: props.dynamoStack!.challenge.tableName,
         },
       }
     );
 
     const api = new RestApi(this, `${SYSTEM_NAME}-api`, {
-      restApiName: `${getAccountUniqueName(props.context)}-todo3days-api`,
-      description: "Todo3Days Application API",
+      restApiName: `${getAccountUniqueName(props.context)}-challenge-api`,
+      description: "challenge Application API",
       deployOptions: {
         stageName: "dev",
         metricsEnabled: true,
@@ -212,7 +210,7 @@ export class Todo3DaysApiStack extends cdk.Stack {
             {
               logGroupName: `/API-Gateway/${getAccountUniqueName(
                 props.context
-              )}-todo3days-api`,
+              )}-challenge-api`,
               removalPolicy: props.terminationProtection
                 ? cdk.RemovalPolicy.RETAIN
                 : cdk.RemovalPolicy.DESTROY,
@@ -227,12 +225,12 @@ export class Todo3DaysApiStack extends cdk.Stack {
 
     const apiKey = api.addApiKey(`${SYSTEM_NAME}-ApiKey`, {
       apiKeyName: `${getAccountUniqueName(props.context)}-ApiKey`,
-      description: "Todo3Days API Key",
+      description: "challenge API Key",
     });
 
     const usagePlan = api.addUsagePlan(`${SYSTEM_NAME}-UsagePlan`, {
       name: `${getAccountUniqueName(props.context)}-UsagePlan`,
-      description: "Todo3Days Usage Plan",
+      description: "challenge Usage Plan",
       apiStages: [
         {
           api: api,
@@ -247,31 +245,31 @@ export class Todo3DaysApiStack extends cdk.Stack {
     };
     updateUserInfoFunction;
 
-    const userResource = api.root.addResource("createUser");
+    const userResource = api.root.addResource("signup");
     userResource.addMethod(
       "POST",
       new LambdaIntegration(createUserFunction),
       methodOptions
     );
 
-    const loginResource = api.root.addResource("readUser");
+    const confirmResource = api.root.addResource("confirm");
+    confirmResource.addMethod(
+      "POST",
+      new LambdaIntegration(confirmUserFunction),
+      methodOptions
+    );
+
+    const loginResource = api.root.addResource("login");
     loginResource.addMethod(
       "POST",
+      new LambdaIntegration(loginUserFunction),
+      methodOptions
+    );
+
+    const readResource = api.root.addResource("readUser");
+    readResource.addMethod(
+      "GET",
       new LambdaIntegration(readUserFunction),
-      methodOptions
-    );
-
-    const updateUserFriendResource = api.root.addResource("userFriend");
-    updateUserFriendResource.addMethod(
-      "PUT",
-      new LambdaIntegration(updateUserFriendFunction),
-      methodOptions
-    );
-
-    const updateUserTodoResource = api.root.addResource("userTodo");
-    updateUserTodoResource.addMethod(
-      "PUT",
-      new LambdaIntegration(updateUserTodoFunction),
       methodOptions
     );
 
@@ -282,31 +280,31 @@ export class Todo3DaysApiStack extends cdk.Stack {
       methodOptions
     );
 
-    const createGoingTodoResource = api.root.addResource("createTodo");
-    createGoingTodoResource.addMethod(
+    const createChallengeResource = api.root.addResource("createChallenge");
+    createChallengeResource.addMethod(
       "POST",
-      new LambdaIntegration(createGoingTodoFunction),
+      new LambdaIntegration(createChallengeFunction),
       methodOptions
     );
 
-    const readGoingTodoResource = api.root.addResource("readTodo");
-    readGoingTodoResource.addMethod(
+    const readChallengeResource = api.root.addResource("readChallenge");
+    readChallengeResource.addMethod(
       "POST",
-      new LambdaIntegration(readGoingTodoFunction),
+      new LambdaIntegration(readChallengeFunction),
       methodOptions
     );
 
-    const updateGoingTodoResource = api.root.addResource("updateTodo");
-    updateGoingTodoResource.addMethod(
+    const updateChallengeResource = api.root.addResource("updateChallenge");
+    updateChallengeResource.addMethod(
       "PUT",
-      new LambdaIntegration(updateGoingTodoTodoFunction),
+      new LambdaIntegration(updateChallengeFunction),
       methodOptions
     );
 
-    const deleteGoingTodoResource = api.root.addResource("deleteTodo");
-    deleteGoingTodoResource.addMethod(
+    const deleteChallengeResource = api.root.addResource("deleteChallenge");
+    deleteChallengeResource.addMethod(
       "DELETE",
-      new LambdaIntegration(deleteGoingTodoTodoFunction),
+      new LambdaIntegration(deleteChallengeFunction),
       methodOptions
     );
   }

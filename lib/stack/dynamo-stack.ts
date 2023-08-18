@@ -8,27 +8,27 @@ import {
   ITable,
   Table,
 } from "aws-cdk-lib/aws-dynamodb";
-import { Todo3DaysCdkStackProps } from "../hello-cdk-stack";
+import { ChallengeCdkStackProps } from "../hello-cdk-stack";
 import { SYSTEM_NAME } from "../config/commons";
 
-export class Todo3DaysCdkDynamoStack extends cdk.Stack {
+export class ChallengeCdkDynamoStack extends cdk.Stack {
   public User: ITable;
-  public goingTodo: ITable;
+  public challenge: ITable;
 
-  constructor(scope: Construct, id: string, props: Todo3DaysCdkStackProps) {
+  constructor(scope: Construct, id: string, props: ChallengeCdkStackProps) {
     super(scope, id, props);
 
     this.User = new Table(this, `${SYSTEM_NAME}-user-table`, {
       tableName: `${getAccountUniqueName(props.context)}-user-table`,
       partitionKey: {
-        name: "userSerialNum",
+        name: "userId",
         type: AttributeType.STRING,
       },
       billingMode: BillingMode.PAY_PER_REQUEST,
     });
 
-    this.goingTodo = new Table(this, `${SYSTEM_NAME}-goingtodo-table`, {
-      tableName: `${getAccountUniqueName(props.context)}-goingtodo-table`,
+    this.challenge = new Table(this, `${SYSTEM_NAME}-challenge-table`, {
+      tableName: `${getAccountUniqueName(props.context)}-challenge-table`,
       partitionKey: {
         name: "todoSerialNum",
         type: AttributeType.STRING,

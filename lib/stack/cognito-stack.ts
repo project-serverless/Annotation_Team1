@@ -1,17 +1,20 @@
 import * as cdk from "aws-cdk-lib";
 import * as cognito from "aws-cdk-lib/aws-cognito";
 import { Construct } from "constructs";
-import { Todo3DaysCdkStackProps } from "../hello-cdk-stack";
+import { ChallengeCdkStackProps } from "../hello-cdk-stack";
+import { getAccountUniqueName, Account } from "../config/accounts";
 import { SYSTEM_NAME } from "../config/commons";
 
-export class Todo3DaysCdkCognitoStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: Todo3DaysCdkStackProps) {
+export class ChallengeCdkCognitoStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: ChallengeCdkStackProps) {
     super(scope, id, props);
 
     const userpool = new cognito.UserPool(this, `${SYSTEM_NAME}-userpool`, {
-      userPoolName: `${SYSTEM_NAME}-userpool`,
+      userPoolName: `${getAccountUniqueName(
+        props.context
+      )}-${SYSTEM_NAME}-userpool`,
       signInAliases: {
-        email: true,
+        username: true,
       },
       selfSignUpEnabled: true,
       autoVerify: {
@@ -46,7 +49,7 @@ export class Todo3DaysCdkCognitoStack extends cdk.Stack {
       {
         userPool: userpool,
         cognitoDomain: {
-          domainPrefix: "todo3days",
+          domainPrefix: "challenge",
         },
       }
     );

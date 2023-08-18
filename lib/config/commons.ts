@@ -1,1 +1,1 @@
-export const SYSTEM_NAME = "Todo3Days";
+export const SYSTEM_NAME = "challenge";
