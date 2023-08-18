@@ -1,0 +1,18 @@
+test data sample
+
+- login
+{
+    "username":",
+    "PASSWORD":"",
+}
+
+- signup
+- signup confirm
+{
+    "infoMessage":"",
+    "nickName":"",
+    "PASSWORD":"",
+    "username":"",
+    "EMAIL":"",
+    "CODE":""
+}
