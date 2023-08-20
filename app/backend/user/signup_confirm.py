@@ -12,9 +12,8 @@ import boto3
 import os
 from random import randint
 from boto3.dynamodb.conditions import Key
-from accounts import USER_POOL_ID,CLIENT_ID,AWS_PROFILE,cognito_key
 
-AWS_API_GATEWAY_URL='https://kj1ikkvxbf.execute-api.ap-northeast-2.amazonaws.com/dev/confirm'
+
 
 
 def getTable():
@@ -23,22 +22,6 @@ def getTable():
     table = dynamodb.Table(table_name)
 
     return table
-    
-def serialNumCheck():
-    
-    table = getTable()
-    userSerialNum  = "user"+str(randint(1,999999)).zfill(6)
-
-    response = table.query(
-        KeyConditionExpression=Key('userSerialNum').eq(userSerialNum)
-    )
-
-    convert_regular_json = json.loads(json.dumps(response))
-    if convert_regular_json["Items"] :
-        userSerialNum  = "user"+str(randint(1,999999)).zfill(6)
-        return table,userSerialNum
-    else : 
-        return table,userSerialNum
 
 def decode_verify_token(token):
    
@@ -60,20 +43,19 @@ def get_secret_hash(username, cognito_client_id,cognito_key):
     return d2
  
 
-def cognito_confirm_signup(email, password,name,code):
+def cognito_confirm_signup(password,name,code):
     client = boto3.client('cognito-idp')
     
     try:
         resp = client.confirm_sign_up(
             ClientId=CLIENT_ID,
             SecretHash=get_secret_hash(name, CLIENT_ID,cognito_key),
-            Username="naxik85349",
+            Username=name,
             ConfirmationCode=code,
             ForceAliasCreation=False
-            
         )
 
-        return {"success": True, "message": f"Signup confirmed for user: {email}", "response": resp}
+        return {"success": True, "message": f"Signup confirmed for user: {name}", "response": resp}
 
     except client.exceptions.UserNotFoundException:
         return {"success": False, "message": "Username doesnt exists"}
@@ -86,33 +68,43 @@ def cognito_confirm_signup(email, password,name,code):
     
 def lambda_handler(event, context):
     client = boto3.client('cognito-idp')
-    response= cognito_confirm_signup(event['EMAIL'],event['PASSWORD'], event['CODE'])
+
+    USERID = event['ID']
+    PASSWORD =event['PW']
+    NICKNAME = event['nickName']
+    INFOMESSAGE = event['infoMessage']
+    CODE = event['Code']
+    response= cognito_confirm_signup(PASSWORD,USERID, CODE)
     
     try:
 
         table = getTable()
 
         item = {
-            "infoMessage":event['infoMessage'],
-            "nickName": event['nickName'],
-            "password":event['PASSWORD'],
-            "userId":event['username']
+            "userId":USERID,
+            "password":PASSWORD,
+            "nickName": NICKNAME,
+            "infoMessage":INFOMESSAGE,
+            "SuccessGoal":0,
+            "ContinueGoal":0,
+            "FriendCnt":0,
+            "Goal":"NONE", #진행중인 goal todoSerialNum
+            "GoalArr":[False,False,False],
+            "Friends":["NONE"], #친구 userId
+            "TodaySuccess":False
         }
 
         table.put_item(Item=item)
         
         return{
             'statusCode':200,
-            'body':json.dumps(response['message']),
-             'headers':{ 'Access-Control-Allow-Origin' : '*' }
+            'body':json.dumps(response['message'])
         }
     
     except botocore.exceptions.ClientError as e :
         error_code = e.response['Error']['Code']
         return{
             'statusCode':500,
-            'body':'fail'
+            'body':error_code
         }
-    
-
   

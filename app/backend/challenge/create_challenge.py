@@ -13,7 +13,7 @@ def getTable():
     return table
 
 #todoSerialNum 중복 검사 
-def serialNumCheck(userSerialNum):
+def serialNumCheck():
     
     table = getTable()
     todoSerialNum = "todo"+str(randint(1,999999)).zfill(6)
@@ -32,11 +32,11 @@ def serialNumCheck(userSerialNum):
 #create todo 
 def lambda_handler(event, context):
     
-    userSerialNum = event['userSerialNum']
-    table,todoSerialNum = serialNumCheck(userSerialNum)
+    userId = event['userId']
+    table,todoSerialNum = serialNumCheck()
 
     item = {
-        'userSerialNum': userSerialNum,
+        'userId': userId,
         'finalDate':event['finalDate'],
         'todoSerialNum':todoSerialNum,
         'date':
@@ -63,5 +63,5 @@ def lambda_handler(event, context):
     
     return {
         'statusCode': 200,
-        'body': json.dumps(f'{userSerialNum} create!')
+        'body': json.dumps(f'{userId} create!')
     }

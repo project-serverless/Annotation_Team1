@@ -6,7 +6,7 @@ from boto3.dynamodb.conditions import Key
 
 def getTable():
     
-    table_name = os.getenv("TABLE_NAME")
+    table_name = "team1-ICN-user-table"
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(table_name)
     
@@ -15,89 +15,119 @@ def getTable():
 def lambda_handler(event, context):
     
     table = getTable()
-    
-    userSerialNum = event['userSerialNum']
-    type = event['updateAttrType']
-    content = event['content']
+    client =boto3.client('cognito-idp')
+    access_token = event["params"]['header']['Authorization']
 
-    #userId 수정 불가
-    if type == "userId" :
+    result = client.get_user(
+            AccessToken = access_token
+    )
+    
+    response = table.query(
+        KeyConditionExpression=Key('userId').eq(result['Username'])
+    )
+   
+    previousPassword = response['Items'][0]['password']
+    proposedPassword = event['body-json']['PW']
+    nickname = event['body-json']['NickName']
+    comment = event['body-json']['Comment']
+
+    #password 수정
+    if not proposedPassword == "NONE" :
+        response=update_userPassword(table,response['Items'][0]['userId'],access_token,previousPassword,proposedPassword)
+        return {
+            'statusCode': response['statusCode'],
+            'body': json.dumps('password update!')
+        }
+    #nickname 수정
+    if not nickname == "NONE" :
+        update_userNickname(table,result['Username'],nickname)
         return {
             'statusCode': 200,
-            'body': json.dumps(f'{type} fail!')
+            'body': json.dumps('nickname update!')
         }
-    #friend Id 추가
-    elif type == "friends" :
-        update_userFriend(userSerialNum,content)
-    #goalList 추가
-    elif type == "goalList" :
-        response = table.query(
-            KeyConditionExpression=Key('userSerialNum').eq(userSerialNum)
+    #infomessage 수정
+    if not comment == "NONE" :
+        update_userinfoMessage(table,result['Username'],comment)
+        return {
+            'statusCode': 200,
+            'body': json.dumps('comment update!')
+        }
+    else : 
+        return {
+            'statusCode': 200,
+            'body': json.dumps('수정완료')
+        }
+
+
+#패스워드 변경
+def update_userPassword(table,userId,access_token,previousPassword,proposedPassword):
+    client =boto3.client('cognito-idp')
+    try:
+        resp = client.change_password(
+            PreviousPassword="testdata820@",
+            ProposedPassword="testdata821",
+            AccessToken = access_token
         )
-        convert_regular_json = json.loads(json.dumps(response))
-        count= len(convert_regular_json["Items"][0][type])
-        update_usergoingTodo(table,userSerialNum,content,count)
-    else :
+        
         table.update_item(
             Key={
-                'userSerialNum':userSerialNum
+                'userId': userId
             },
-            UpdateExpression='set #updateType= :content',
+            UpdateExpression="set #password=:data",
             ExpressionAttributeNames={
-                '#updateType':type
+                "#password":"password"
             },
             ExpressionAttributeValues={
-                ':content':content
+                ":data":password
             }
         )
+        
+    except client.exceptions.InvalidPasswordException as e:
+        
+        return {
+               "statusCode": 400, 
+               "message": "Password should have Caps,\
+                          Special chars, Numbers", 
+               "data": None}
+
+    except Exception as e:
+        return {
+                "statusCode": 400, 
+                "message": str(e), 
+                "data": None
+            }
+    
     return {
-        'statusCode': 200,
-        'body': json.dumps(f'{userSerialNum}{type}{content}update!')
-    }
-
-
-#친구 추가
-def update_userFriend(table,userSerialNum,content):
-    
+            "statusCode": 200, 
+            "message": "Success", 
+            "data": None}
+            
+#닉네임 변경
+def update_userNickname(table,userId,nickname):
     table.update_item(
         Key={
-            'userSerialNum': userSerialNum
+            'userId': userId
         },
-        UpdateExpression="set #friends=list_append(#friends,:data)",
+        UpdateExpression="set #nickname=:data",
         ExpressionAttributeNames={
-            "#friends":"friends"
+            "#nickname":"nickName"
         },
         ExpressionAttributeValues={
-            ":data":[content]
+            ":data":nickname
         }
     )
 
+#infomessage 변경
+def update_userinfoMessage(table,userId,infomessage):
     table.update_item(
         Key={
-            'userSerialNum': content
+            'userId': userId
         },
-        UpdateExpression="set #friends=list_append(#friends,:data)",
+        UpdateExpression="set #infomessage=:data",
         ExpressionAttributeNames={
-            "#friends":"friends"
+            "#infomessage":"infoMessage"
         },
         ExpressionAttributeValues={
-            ":data":[userSerialNum]
-        }
-    )
-
-#종료된 todo 사용자 info에 저장
-def update_usergoingTodo(table,userSerialNum,content,count):
-    
-    table.update_item(
-        Key={
-            'userSerialNum': userSerialNum
-        },
-        UpdateExpression="set #goalList.#count=:data",
-        ExpressionAttributeNames={
-            "#goalList":"goalList",
-            "#count":str(count+1)
-        },
-        ExpressionAttributeValues={
-            ":data":content
+            ":data":infomessage
         }
     )

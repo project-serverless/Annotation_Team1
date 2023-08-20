@@ -69,9 +69,7 @@ import boto3
 import os
 from random import randint
 from boto3.dynamodb.conditions import Key
-from accounts import USER_POOL_ID,CLIENT_ID,AWS_PROFILE,cognito_key
 
-AWS_API_GATEWAY_URL="https://4wksq6si1k.execute-api.ap-northeast-2.amazonaws.com/dev/createUser"
 
 def decode_verify_token(token):
    
@@ -94,7 +92,6 @@ def get_secret_hash(username, cognito_client_id,cognito_key):
     
     
 def cognito_signup(email, password, name):
-
 
     client =boto3.client('cognito-idp')
     
@@ -145,21 +142,18 @@ def cognito_signup(email, password, name):
 
 
 def lambda_handler(event, context):
+    
     client = boto3.client('cognito-idp')
-    response = cognito_signup(event('EMAIL'), event('PASSWORD'), event('USERNAME'))
 
-    input_data = json.dumps({
-        "infoMessage":event['infoMessage'],
-        "nickName": 'nickName',
-        "password":event('PASSWORD'),
-        "userId":event('USERNAME')
-    })
+    USERID = event['ID']
+    PASSWORD =event['PW']
+    EMAIL = event['Email']
+    NICKNAME = event['nickName']
+    INFOMESSAGE = event['infoMessage']
+
+    response = cognito_signup(EMAIL, PASSWORD, USERID)
 
     return{
-            'statusCode':200,
-            'body':json.dumps({'success':response['success'],'input_data':input_data}),
-            'headers':{ 'Access-Control-Allow-Origin' : '*' }
-        }
-    
-
-   
+        'statusCode':200,
+        'body':json.dumps({'resp':response})
+    }

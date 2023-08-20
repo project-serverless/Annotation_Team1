@@ -12,9 +12,8 @@ import boto3
 import os
 from random import randint
 from boto3.dynamodb.conditions import Key
-from accounts import USER_POOL_ID,CLIENT_ID,AWS_PROFILE,cognito_key
+#from accounts import USER_POOL_ID,CLIENT_ID,AWS_PROFILE,cognito_key
 
-AWS_API_GATEWAY_URL='https://kj1ikkvxbf.execute-api.ap-northeast-2.amazonaws.com/dev/login'
 
 def getTable():
     table_name = os.getenv("TABLE_NAME")
@@ -22,7 +21,8 @@ def getTable():
     table = dynamodb.Table(table_name)
 
     return table
-    
+
+''' 
 def serialNumCheck():
     
     table = getTable()
@@ -38,10 +38,10 @@ def serialNumCheck():
         return table,userSerialNum
     else : 
         return table,userSerialNum
+'''
 
 def decode_verify_token(token):
-   
-    # build the URL where the public keys are
+ 
     jwks_url = 'https://cognito-idp.{}.amazonaws.com/{}/.well-known/jwks.json'.format(
                         'ap-northeast-2_LmHeIjgVm',
                         USER_POOL_ID)
@@ -58,7 +58,7 @@ def get_secret_hash(username, cognito_client_id,cognito_key):
     d2 = base64.b64encode(dig).decode()
     return d2
             
-def cognito_login(password,name):
+def cognito_login(password,userId):
     client = boto3.client('cognito-idp')
 
     try:
@@ -66,8 +66,8 @@ def cognito_login(password,name):
                  ClientId=CLIENT_ID,
                  AuthFlow='USER_PASSWORD_AUTH',
                  AuthParameters={
-                     'USERNAME': name,
-                     'SECRET_HASH': get_secret_hash(name,CLIENT_ID,cognito_key),
+                     'USERNAME': userId,
+                     'SECRET_HASH': get_secret_hash(userId,CLIENT_ID,cognito_key),
                      'PASSWORD': password,
                   })
 
@@ -83,22 +83,19 @@ def cognito_login(password,name):
 
 def lambda_handler(event, context):
     client = boto3.client('cognito-idp')
-    PASSWORD = event['PASSWORD']
-    USERNAME = event['username']
-    response = cognito_login(PASSWORD,USERNAME)
+    USERID = event['ID']
+    PASSWORD = event['PW']
+    response = cognito_login(PASSWORD,USERID)
+    access_token = response['AuthenticationResult']['AccessToken']
 
-    #access_token = response['AuthenticationRestult']['AccessToken']
-    #refresh_token = response['AuthenticationResult']['RefreshToken']
-    
     try:
-       # result = client.get_user(
-    #        AccessToken = access_token
-    #    )
+        result = client.get_user(
+            AccessToken = access_token
+        )
         
         return{
             'statusCode':200,
-            'body':response,
-            # 'body':json.dumps({'access_token':access_token,'refresh_token':refresh_token}),
+            'body':access_token,
             'headers':{ 'Access-Control-Allow-Origin' : '*' }
         }
     
