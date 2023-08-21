@@ -24,6 +24,7 @@ import com.chattymin.threedays.ui.theme.LightGreen
 import com.chattymin.threedays.R
 import com.chattymin.threedays.ui.theme.Green
 import com.chattymin.threedays.ui.theme.LightYellow
+import com.chattymin.threedays.ui.theme.Pink
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -56,7 +57,7 @@ fun UserInfo() {
                 .height(180.dp)
                 .fillMaxWidth()
                 .padding(12.dp),
-            verticalArrangement = Arrangement.SpaceAround
+            verticalArrangement = Arrangement.SpaceBetween//SpaceAround
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -183,13 +184,12 @@ fun FriendTodayGoal() {
             BoxFrame(modifier = Modifier.padding(4.dp), color = LightYellow) {
                 Column(modifier = Modifier.padding(4.dp)) {
                     Text(modifier = Modifier.padding(4.dp), text = "김희연", color = Green)
-
                     Row() {
                         SmallBoxFrame(size = 100) {
-                            DayBoolean(text = "Day 3", id = R.drawable.checkcircle_solid)
+                            DayBoolean(text = "Day 1", id = R.drawable.checkcircle_solid)
                         }
                         SmallBoxFrame(size = 100) {
-                            DayBoolean(text = "Day 3", id = R.drawable.checkcircle_solid)
+                            DayBoolean(text = "Day 2", id = R.drawable.checkcircle_solid)
                         }
                         SmallBoxFrame(size = 100) {
                             DayBoolean(text = "Day 3", id = R.drawable.checkcircle_outline)

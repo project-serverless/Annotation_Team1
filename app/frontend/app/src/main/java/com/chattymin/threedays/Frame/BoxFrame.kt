@@ -13,10 +13,10 @@ import com.chattymin.threedays.ui.theme.Green
 import com.chattymin.threedays.ui.theme.LightYellow
 
 @Composable
-fun BoxFrame(modifier: Modifier = Modifier, color: Color = Green, item: @Composable BoxScope.() -> Unit) {
+fun BoxFrame(modifier: Modifier = Modifier, size: Float = 1f, color: Color = Green, item: @Composable BoxScope.() -> Unit) {
     Box(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxWidth(size)
             .clip(shape = RoundedCornerShape(12.dp))
             .background(color),
     ) {

@@ -10,11 +10,10 @@ import androidx.compose.ui.unit.dp
 import com.chattymin.threedays.R
 
 @Composable
-fun IconTopView(isSetting: Boolean = false) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+fun IconTopView(isSetting: Boolean = false, padding: Int = 24) {
+    Row(modifier = Modifier.padding(horizontal = padding.dp, vertical = 24.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Image(
             modifier = Modifier
-                .padding(24.dp)
                 .size(60.dp),
             painter = painterResource(id = R.drawable.icon_small),
             contentDescription = "small icon"
@@ -23,7 +22,6 @@ fun IconTopView(isSetting: Boolean = false) {
         if (isSetting){
             Image(
                 modifier = Modifier
-                    .padding(24.dp)
                     .size(24.dp)
                     .clickable {  },
                 painter = painterResource(id = R.drawable.setting),

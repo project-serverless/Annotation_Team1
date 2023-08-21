@@ -13,11 +13,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.chattymin.threedays.Screens.FriendListScreen
 import com.chattymin.threedays.Screens.MainScreen
-import com.chattymin.threedays.navigation.BottomScreen
-import com.chattymin.threedays.navigation.MainNavigationScreens
-import com.chattymin.threedays.navigation.MyNavigationScreens
-import com.chattymin.threedays.navigation.Screen
+import com.chattymin.threedays.navigation.*
 import com.chattymin.threedays.ui.theme.Green
 import com.chattymin.threedays.ui.theme.LightGreen
 import java.lang.Exception
@@ -41,7 +39,7 @@ fun SetupNavGraph(navController: NavHostController){
 fun BottomNavigation(navController: NavHostController) {
     val items = listOf(
         BottomScreen.Main,
-        BottomScreen.My
+        BottomScreen.Friend
     )
 
     BottomNavigation(backgroundColor = LightGreen, elevation = 10.dp) {
@@ -102,8 +100,8 @@ fun MainScreenView(startDestination: String) {
                 }
 
                 // My
-                composable(MyNavigationScreens.My.route) {
-                    //MyScreen(navController = navController)
+                composable(FriendNavigationScreens.FriendList.route) {
+                    FriendListScreen()
                 }
             }
         }

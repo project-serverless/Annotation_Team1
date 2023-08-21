@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 import com.chattymin.threedays.ui.theme.Pink
 
 @Composable
-fun DayBoolean(text: String, id: Int){
+fun DayBoolean(modifier: Modifier = Modifier, text: String, id: Int, textSize: Int = 20) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
             modifier = Modifier
@@ -23,6 +23,6 @@ fun DayBoolean(text: String, id: Int){
             contentDescription = "send",
             tint = Pink
         )
-        Text(text = text, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
+        Text(text = text, fontSize = textSize.sp, fontWeight = FontWeight.ExtraBold)
     }
 }

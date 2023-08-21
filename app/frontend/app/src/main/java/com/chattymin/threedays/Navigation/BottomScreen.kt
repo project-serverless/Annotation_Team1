@@ -13,8 +13,8 @@ sealed class BottomScreen(
 ) {
     object Main : BottomScreen("메인", Icons.Outlined.Home, Icons.Filled.Home, "main")
 
-    object My :
-        BottomScreen("친구", Icons.Outlined.Person, Icons.Filled.Person, "my")
+    object Friend :
+        BottomScreen("친구", Icons.Outlined.Person, Icons.Filled.Person, "friendList")
 }
 
 sealed class MainNavigationScreens(val route: String) {
@@ -22,6 +22,6 @@ sealed class MainNavigationScreens(val route: String) {
     // object MainReview : MainNavigationScreens("mainReview")
 }
 
-sealed class MyNavigationScreens(val route: String) {
-    object My : MyNavigationScreens("my")
+sealed class FriendNavigationScreens(val route: String) {
+    object FriendList : FriendNavigationScreens("friendList")
 }
