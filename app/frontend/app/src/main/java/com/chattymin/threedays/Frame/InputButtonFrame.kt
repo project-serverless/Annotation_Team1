@@ -49,8 +49,8 @@ fun InputButtonFrame(searchText: MutableState<String>, onSearch: (String) -> Uni
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchBar(text:String, maxWidth: Float = 0.6f, imeAction: ImeAction, onSearch: (String) -> Unit) {
-    var searchText by rememberSaveable { mutableStateOf("") }
+fun SearchBar(text:String, searchText: MutableState<String>, maxWidth: Float = 0.6f, imeAction: ImeAction, onSearch: (String) -> Unit) {
+    //var searchText by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -69,9 +69,9 @@ fun SearchBar(text:String, maxWidth: Float = 0.6f, imeAction: ImeAction, onSearc
         Spacer(modifier = Modifier.width(10.dp))
         Text(text = text + " : ", fontSize = 16.sp, fontWeight = FontWeight.Bold)
         BasicTextField(
-            value = searchText,
+            value = searchText.value,
             onValueChange = { newText ->
-                searchText = newText
+                searchText.value = newText
             },
             textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
             singleLine = true,
@@ -81,7 +81,7 @@ fun SearchBar(text:String, maxWidth: Float = 0.6f, imeAction: ImeAction, onSearc
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = imeAction),
             keyboardActions = KeyboardActions(
                 onNext = {
-                    onSearch(searchText)
+                    onSearch(searchText.value)
                     focusManager.moveFocus(FocusDirection.Down)
                     //keyboardController?.hide()
                 },
@@ -98,5 +98,5 @@ fun SearchBar(text:String, maxWidth: Float = 0.6f, imeAction: ImeAction, onSearc
 @Preview
 @Composable
 fun SearchBarPreview() {
-    SearchBar(text = "ID", imeAction = ImeAction.Next,onSearch = {})
+    //SearchBar(text = "ID", imeAction = ImeAction.Next,onSearch = {})
 }

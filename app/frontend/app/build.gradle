@@ -63,4 +63,17 @@ dependencies {
 
     // Navigation
     implementation 'androidx.navigation:navigation-compose:2.5.0'
+
+    // Retrofit 라이브러리
+    def retrofit_version = "2.9.0"
+    implementation "com.squareup.retrofit2:retrofit:${retrofit_version}"
+
+    // Gson
+    implementation "com.squareup.retrofit2:converter-gson:${retrofit_version}"
+
+    // Scalars 변환기 라이브러리
+    implementation "com.squareup.retrofit2:converter-scalars:${retrofit_version}"
+
+    // 레트로핏 로깅 인터셉터
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 }

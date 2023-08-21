@@ -1,5 +1,7 @@
 package com.chattymin.threedays.Screens
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,14 +21,27 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chattymin.threedays.App
 import com.chattymin.threedays.Frame.RoundCornerFrame
 import com.chattymin.threedays.Frame.SearchBar
 import com.chattymin.threedays.R
 import com.chattymin.threedays.ui.theme.Green
 import com.chattymin.threedays.ui.theme.LightGreen
+import com.dongminpark.threedays.Retrofit.RetrofitManager
+import com.dongminpark.threedays.Utils.MESSAGE
+import com.dongminpark.threedays.Utils.RESPONSE_STATE
 
 @Composable
 fun SignUpScreen(){
+    var ID = remember { mutableStateOf("") }
+    var PW = remember { mutableStateOf("") }
+    var Email = remember { mutableStateOf("") }
+    var nickName = remember { mutableStateOf("") }
+    var infoMessage = remember { mutableStateOf("") }
+    var Code = remember {
+        mutableStateOf("")
+    }
+
     var popUp by remember{
         mutableStateOf(false)
     }
@@ -35,7 +50,6 @@ fun SignUpScreen(){
     }
 
     if (popUp) {
-        //val SearchAddressInput = remember { mutableStateOf(TextFieldValue()) }
         AlertDialog(
             onDismissRequest = {
                 popUp = false
@@ -44,7 +58,6 @@ fun SignUpScreen(){
                 Column {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
                         Column(modifier = Modifier
-                            //.fillMaxWidth()
                             .padding(start = 12.dp, bottom = 12.dp, end = 12.dp), horizontalAlignment = Alignment.Start) {
                             Text("이메일로 인증번호를 보냈습니다!", fontWeight = FontWeight.Bold)
                             Text("인증번호를 입력해주세요 :)", fontWeight = FontWeight.Bold)
@@ -65,11 +78,28 @@ fun SignUpScreen(){
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
-                        SearchBar(text = "인증번호", maxWidth = 0.9f, imeAction = ImeAction.Done,onSearch = {})
+                        SearchBar(text = "인증번호", searchText = Code, maxWidth = 0.9f, imeAction = ImeAction.Done,onSearch = {})
                         Icon(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clickable {
+                                    RetrofitManager.instance.confirm(
+                                        ID = ID.value,
+                                        PW = PW.value,
+                                        nickName = nickName.value,
+                                        infoMessage = infoMessage.value,
+                                        Code = Code.value,
+                                        completion = { responseState ->
+                                            when (responseState) {
+                                                RESPONSE_STATE.OKAY -> {
+
+                                                }
+                                                RESPONSE_STATE.FAIL -> {
+                                                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        })
+
                                     popUp = false
                                     popUp2 = true
                                 },
@@ -136,16 +166,30 @@ fun SignUpScreen(){
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
         ){
-            SearchBar(text = "ID", maxWidth = 1f, imeAction = ImeAction.Next,onSearch = {})
-            SearchBar(text = "PW", maxWidth = 1f, imeAction = ImeAction.Next,onSearch = {})
-            SearchBar(text = "E-Mail", maxWidth = 1f,imeAction = ImeAction.Next,onSearch = {})
-            SearchBar(text = "Nick Name", maxWidth = 1f, imeAction = ImeAction.Next,onSearch = {})
-            SearchBar(text = "How Are You?", maxWidth = 1f, imeAction = ImeAction.Done,onSearch = {})
+            SearchBar(text = "ID", searchText = ID, maxWidth = 1f, imeAction = ImeAction.Next,onSearch = {})
+            SearchBar(text = "PW", searchText = PW,maxWidth = 1f, imeAction = ImeAction.Next,onSearch = {})
+            SearchBar(text = "E-Mail", searchText = Email, maxWidth = 1f,imeAction = ImeAction.Next,onSearch = {})
+            SearchBar(text = "Nick Name", searchText = nickName, maxWidth = 1f, imeAction = ImeAction.Next,onSearch = {})
+            SearchBar(text = "How Are You?", searchText = infoMessage, maxWidth = 1f, imeAction = ImeAction.Done,onSearch = {})
             RoundCornerFrame(
                 modifier = Modifier
                     .clickable {
                     // api 호출 and 팝업
-                               popUp = true
+                        RetrofitManager.instance.signup(
+                            ID = ID.value,
+                            PW = PW.value,
+                            Email = Email.value,
+                            completion = { responseState ->
+                                when (responseState) {
+                                    RESPONSE_STATE.OKAY -> {
+
+                                    }
+                                    RESPONSE_STATE.FAIL -> {
+                                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            })
+                        popUp = true
                 },
                 maxWidth = 0.8f,
                 borderColor = Green,
@@ -183,7 +227,7 @@ fun PopUpPreview(){
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
-                    SearchBar(text = "인증번호", maxWidth = 0.9f, imeAction = ImeAction.Done,onSearch = {})
+                    //SearchBar(text = "인증번호", maxWidth = 0.9f, imeAction = ImeAction.Done,onSearch = {})
                     Icon(
                         modifier = Modifier
                             .size(40.dp),

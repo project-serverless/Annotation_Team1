@@ -54,7 +54,9 @@ fun FriendListScreen() {
 
 @Composable
 fun FriendItem() {
-    BoxFrame {
+    BoxFrame(modifier = Modifier.clickable{
+
+    }) {
         Column(
             modifier = Modifier
                 .height(180.dp)
