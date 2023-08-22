@@ -20,15 +20,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.chattymin.threedays.Frame.BoxFrame
 import com.chattymin.threedays.Frame.DayBoolean
 import com.chattymin.threedays.Frame.SmallBoxFrame
 import com.chattymin.threedays.R
+import com.chattymin.threedays.navigation.BottomScreen
+import com.chattymin.threedays.navigation.FriendNavigationScreens
+import com.chattymin.threedays.navigation.Screen
 import com.chattymin.threedays.ui.theme.LightGreen
 import com.chattymin.threedays.ui.theme.LightYellow
 
 @Composable
-fun FriendListScreen() {
+fun FriendListScreen(navController: NavController) {
     var friendsList by rememberSaveable {
         mutableStateOf(3)
     }
@@ -46,16 +50,16 @@ fun FriendListScreen() {
         }
         items(friendsList) {
             Spacer(modifier = Modifier.height(6.dp))
-            FriendItem()
+            FriendItem(navController = navController)
             Spacer(modifier = Modifier.height(6.dp))
         }
     }
 }
 
 @Composable
-fun FriendItem() {
+fun FriendItem(navController: NavController) {
     BoxFrame(modifier = Modifier.clickable{
-
+        navController.navigate(FriendNavigationScreens.FriendDetail.route)
     }) {
         Column(
             modifier = Modifier
@@ -79,15 +83,15 @@ fun FriendItem() {
                 )
                 Column() {
                     Text(
-                        text = "박동민",
+                        text = "김혜빈",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = LightGreen
                     )
                     Text(
-                        text = "Android Devloper 박동민입니다 :)",
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 16.sp,
+                        text = "하나씩 하나씩 이뤄가는 재미",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
                         color = Color.Black
                     )
                 }
@@ -108,8 +112,9 @@ fun FriendItem() {
                     ) {
                         Text(
                             modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
-                            text = "나의 목표~~~~~~~~~",
-                            fontSize = 12.sp
+                            text = "1일 1커밋",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
                         )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -123,7 +128,7 @@ fun FriendItem() {
                             DayBoolean(
                                 modifier = Modifier.padding(12.dp),
                                 text = "Day 2",
-                                id = R.drawable.checkcircle_solid
+                                id = R.drawable.checkcircle_outline
                             )
                             DayBoolean(
                                 modifier = Modifier.padding(12.dp),
@@ -151,5 +156,5 @@ fun FriendItem() {
 @Preview
 @Composable
 fun FriendListScreenPreview() {
-    FriendListScreen()
+    //FriendListScreen()
 }

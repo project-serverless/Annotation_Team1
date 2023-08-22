@@ -1,4 +1,4 @@
-package com.dongminpark.threedays.Utils
+package com.chattymin.threedays.Utils
 
 object Constants {
     const val TAG: String = "로그"
@@ -13,9 +13,13 @@ object API{
     const val BASE_URL = "https://kj1ikkvxbf.execute-api.ap-northeast-2.amazonaws.com/dev/"
 
     // SingUp
-    const val SIGNUP = "/signup"
-    const val CONFIRM = "/confirm"
-    const val LOGIN = "/login"
+    const val SIGNUP = "sign_up"
+    const val CONFIRM = "confirm"
+    const val LOGIN = "login"
+
+    const val MAINPAGE = "mainpage"
+
+    const val SETGOAL = "setgoal"
 
 }
 

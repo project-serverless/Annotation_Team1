@@ -1,10 +1,10 @@
-package com.dongminpark.threedays.Retrofit
+package com.chattymin.threedays.Retrofit
 
 import android.util.Log
 import com.chattymin.threedays.App
-import com.dongminpark.threedays.Utils.Constants.TAG
-import com.dongminpark.threedays.Utils.isJsonArray
-import com.dongminpark.threedays.Utils.isJsonObject
+import com.chattymin.threedays.Utils.Constants.TAG
+import com.chattymin.threedays.Utils.isJsonArray
+import com.chattymin.threedays.Utils.isJsonObject
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -53,7 +53,7 @@ object RetrofitClient {
             override fun intercept(chain: Interceptor.Chain): Response {
                 Log.d(TAG, "RetrofitClient - intercept() called")
 
-                val newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer ${App.token_prefs.accessToken}").build()
+                val newRequest = chain.request().newBuilder().addHeader("Authorization", "${App.token_prefs.accessToken}").build()
                 val newResponse = chain.proceed(newRequest)
 
                 return newResponse

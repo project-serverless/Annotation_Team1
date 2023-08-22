@@ -1,5 +1,6 @@
 package com.chattymin.threedays.Screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,23 +12,40 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.chattymin.threedays.App
 import com.chattymin.threedays.Frame.BoxFrame
 import com.chattymin.threedays.Frame.DayBoolean
 import com.chattymin.threedays.Frame.SmallBoxFrame
-import com.chattymin.threedays.ui.theme.LightGreen
 import com.chattymin.threedays.R
-import com.chattymin.threedays.ui.theme.Green
-import com.chattymin.threedays.ui.theme.LightYellow
-import com.chattymin.threedays.ui.theme.Pink
+import com.chattymin.threedays.Retrofit.RetrofitManager
+import com.chattymin.threedays.Utils.BackOnPressed
+import com.chattymin.threedays.Utils.MESSAGE
+import com.chattymin.threedays.Utils.RESPONSE_STATE
+import com.chattymin.threedays.navigation.Screen
+import com.chattymin.threedays.ui.theme.*
 
 @Composable
 fun MainScreen(navController: NavController) {
+    BackOnPressed()
+
+    RetrofitManager.instance.mainpage(
+        completion = { responseState ->
+            when (responseState) {
+                RESPONSE_STATE.OKAY -> {
+                    //navController.navigate(Screen.Once.route)
+                }
+                RESPONSE_STATE.FAIL -> {
+                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -96,9 +114,9 @@ fun UserInfo() {
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Goal(text = "🏆이룬 목표", count = "24")
-                Goal(text = "🏆연속 목표", count = "4")
-                Goal(text = "🏆이룬 목표", count = "24")
-                Goal(text = "🏆이룬 목표", count = "24")
+                Goal(text = "\uD83C\uDFAF연속 달성", count = "4")
+                Goal(text = "🔥목표 달성률", count = "75%")
+                Goal(text = "\uD83D\uDC65주변 친구", count = "24")
             }
         }
     }
@@ -120,12 +138,20 @@ fun TodayGoal() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "하루에 물 3번 마시기\n목표를 응원해요:)",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = LightGreen
-                )
+                Column() {
+                    Text(
+                        text = "하루에 물 3잔 마시기",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "목표를 응원해요:)",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        color = LightGreen
+                    )
+                }
                 Icon(
                     modifier = Modifier
                         .size(48.dp)
@@ -142,10 +168,10 @@ fun TodayGoal() {
                     .padding(top = 8.dp), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 SmallBoxFrame(size = 100) {
-                    DayBoolean(text = "Day 3", id = R.drawable.checkcircle_solid)
+                    DayBoolean(text = "Day 1", id = R.drawable.checkcircle_solid)
                 }
                 SmallBoxFrame(size = 100) {
-                    DayBoolean(text = "Day 3", id = R.drawable.checkcircle_solid)
+                    DayBoolean(text = "Day 2", id = R.drawable.checkcircle_solid)
                 }
                 SmallBoxFrame(size = 100) {
                     DayBoolean(text = "Day 3", id = R.drawable.checkcircle_outline)
@@ -183,7 +209,11 @@ fun FriendTodayGoal() {
             }
             BoxFrame(modifier = Modifier.padding(4.dp), color = LightYellow) {
                 Column(modifier = Modifier.padding(4.dp)) {
-                    Text(modifier = Modifier.padding(4.dp), text = "김희연", color = Green)
+                    Column(modifier = Modifier.padding(4.dp)) {
+                        Text(modifier = Modifier, text = "김희연", color = Green, fontSize = 16.sp)
+                        Text(modifier = Modifier, text = "하루 책 1권 읽기", color = Color.Black, fontSize = 12.sp)
+                    }
+
                     Row() {
                         SmallBoxFrame(size = 100) {
                             DayBoolean(text = "Day 1", id = R.drawable.checkcircle_solid)

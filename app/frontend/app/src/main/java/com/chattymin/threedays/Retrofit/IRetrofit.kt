@@ -1,7 +1,7 @@
-package com.dongminpark.threedays.Retrofit
+package com.chattymin.threedays.Retrofit
 
 
-import com.dongminpark.threedays.Utils.API
+import com.chattymin.threedays.Utils.API
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import retrofit2.Call
@@ -18,6 +18,11 @@ interface IRetrofit {
     @POST(API.LOGIN)
     fun login(@Body UserInfo: JsonObject) : Call<JsonElement>
 
+    @GET(API.MAINPAGE)
+    fun mainpage() : Call<JsonElement>
+
+    @POST(API.SETGOAL)
+    fun setGoal(@Body UserInfo: JsonObject) : Call<JsonElement>
 //    @DELETE(API.BOOKMARKS_DELETE_POSTNUM)
 //    fun bookmarksDeletePostnum(@Path("postNum") postNum: Int) : Call<JsonElement>
 //

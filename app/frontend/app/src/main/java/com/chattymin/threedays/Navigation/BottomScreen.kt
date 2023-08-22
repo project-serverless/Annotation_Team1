@@ -24,4 +24,5 @@ sealed class MainNavigationScreens(val route: String) {
 
 sealed class FriendNavigationScreens(val route: String) {
     object FriendList : FriendNavigationScreens("friendList")
+    object FriendDetail : FriendNavigationScreens("friendDetail")
 }

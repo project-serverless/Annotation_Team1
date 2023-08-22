@@ -1,7 +1,9 @@
-package com.dongminpark.threedays.Retrofit
+package com.chattymin.threedays.Retrofit
 
-import com.dongminpark.threedays.Utils.API
-import com.dongminpark.threedays.Utils.RESPONSE_STATE
+import android.util.Log
+import com.chattymin.threedays.App
+import com.chattymin.threedays.Utils.API
+import com.chattymin.threedays.Utils.RESPONSE_STATE
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import retrofit2.Call
@@ -54,7 +56,97 @@ class RetrofitManager {
         jsonObject.addProperty("infoMessage", infoMessage)
         jsonObject.addProperty("Code", Code)
 
-        val call = iRetrofit?.signup(jsonObject) ?: return
+        val call = iRetrofit?.confirm(jsonObject) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> {
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> {
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+        })
+    }
+
+    fun login(ID: String, PW: String, completion: (RESPONSE_STATE) -> Unit) {
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("ID", ID)
+        jsonObject.addProperty("PW", PW)
+
+        val call = iRetrofit?.login(jsonObject) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> {
+                        response.body()?.let {
+                            val accessToken = it.asJsonObject.get("body").asString
+                            App.token_prefs.accessToken = accessToken
+                            Log.e("TAG", "onResponse: $accessToken", )
+
+                            completion(RESPONSE_STATE.OKAY)
+                        }
+                    }
+                    else -> {
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+        })
+    }
+
+    fun mainpage(completion: (RESPONSE_STATE) -> Unit) {
+        val call = iRetrofit?.mainpage() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> {
+                        response.body()?.let {
+                            //val accessToken = it.asJsonObject.get("body").asString
+                            //App.token_prefs.accessToken = accessToken
+
+                            completion(RESPONSE_STATE.OKAY)
+                        }
+                    }
+                    else -> {
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+        })
+    }
+
+    fun setgoal(Goal: String, completion: (RESPONSE_STATE) -> Unit) {
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("Goal", Goal)
+
+        val call = iRetrofit?.setGoal(jsonObject) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {

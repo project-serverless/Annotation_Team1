@@ -1,5 +1,6 @@
 package com.chattymin.threedays.Screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,16 +16,53 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.chattymin.threedays.App
 import com.chattymin.threedays.Frame.RoundCornerFrame
 import com.chattymin.threedays.Frame.SearchBar
+import com.chattymin.threedays.Navigation.MainScreenView
 import com.chattymin.threedays.R
+import com.chattymin.threedays.Retrofit.RetrofitManager
+import com.chattymin.threedays.Utils.MESSAGE
+import com.chattymin.threedays.Utils.RESPONSE_STATE
+import com.chattymin.threedays.navigation.BottomScreen
+import com.chattymin.threedays.navigation.Screen
 import com.chattymin.threedays.ui.theme.Green
 import com.chattymin.threedays.ui.theme.LightGreen
 
 @Composable
-fun LoginScreen(){
+fun LoginScreen(navController: NavController){
     var ID = remember { mutableStateOf("") }
     var PW = remember { mutableStateOf("") }
+
+    /*
+    RetrofitManager.instance.setgoal(
+        "하루에 물 3잔 이상 마시",
+        completion = { responseState ->
+            when (responseState) {
+                RESPONSE_STATE.OKAY -> {
+                    //navController.navigate(Screen.Once.route)
+                }
+                RESPONSE_STATE.FAIL -> {
+                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        })
+
+     */
+    RetrofitManager.instance.mainpage(
+        completion = { responseState ->
+            when (responseState) {
+                RESPONSE_STATE.OKAY -> {
+                    //navController.navigate(Screen.Once.route)
+                }
+                RESPONSE_STATE.FAIL -> {
+                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        })
 
     Column(
         modifier = Modifier
@@ -32,15 +70,20 @@ fun LoginScreen(){
             .background(LightGreen),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround
-    ){
-        Image(modifier = Modifier.fillMaxSize(0.6f),painter = painterResource(id = R.drawable.icon_big), contentDescription = "icon")
+    ) {
+        Image(
+            modifier = Modifier.fillMaxSize(0.6f),
+            painter = painterResource(id = R.drawable.icon_big),
+            contentDescription = "icon"
+        )
 
         Column(horizontalAlignment = Alignment.CenterHorizontally,) {
-            SearchBar(text = "ID", searchText = ID, imeAction = ImeAction.Next,onSearch = {})
-            SearchBar(text = "PW", searchText = PW, imeAction = ImeAction.Done,onSearch = {})
+            SearchBar(text = "ID", searchText = ID, imeAction = ImeAction.Next, onSearch = {})
+            SearchBar(text = "PW", searchText = PW, imeAction = ImeAction.Done, onSearch = {})
             Text(
                 modifier = Modifier.clickable {
-                                              // 회원가입 페이지 이동
+                    navController.navigate(Screen.Sign.route)
+                    // 회원가입 페이지 이동
                 },
                 textDecoration = TextDecoration.Underline,
                 text = "SignUp",
@@ -49,11 +92,28 @@ fun LoginScreen(){
 
             RoundCornerFrame(
                 modifier = Modifier.clickable {
-                                              // 로그인
+                    navController.navigate(Screen.Once.route)
+                    /*
+                    RetrofitManager.instance.login(
+                        ID = ID.value,
+                        PW = PW.value,
+                        completion = { responseState ->
+                            when (responseState) {
+                                RESPONSE_STATE.OKAY -> {
+                                    navController.navigate(Screen.Once.route)
+                                }
+                                RESPONSE_STATE.FAIL -> {
+                                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+                        })
+
+                     */
                 },
                 borderColor = Green,
                 arrangement = Arrangement.Center
-            ){
+            ) {
                 Text(text = "Login", color = Green)
             }
         }
@@ -63,5 +123,5 @@ fun LoginScreen(){
 @Preview
 @Composable
 fun LoginScreenPreview(){
-    LoginScreen()
+    //LoginScreen()
 }

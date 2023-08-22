@@ -8,13 +8,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.chattymin.threedays.Screens.FriendListScreen
-import com.chattymin.threedays.Screens.MainScreen
+import com.chattymin.threedays.Screens.*
 import com.chattymin.threedays.navigation.*
 import com.chattymin.threedays.ui.theme.Green
 import com.chattymin.threedays.ui.theme.LightGreen
@@ -27,10 +27,13 @@ fun SetupNavGraph(navController: NavHostController){
         startDestination = Screen.Login.route
     ) {
         composable(route = Screen.Login.route) {
-            // LoginScreen(navController = navController)
+            LoginScreen(navController = navController)
+        }
+        composable(route = Screen.Sign.route) {
+            SignUpScreen(navController = navController)
         }
         composable(route = Screen.Once.route) {
-            // OnceScreen()
+            OnceScreen(BottomScreen.Main.screenRoute)
         }
     }
 }
@@ -99,9 +102,12 @@ fun MainScreenView(startDestination: String) {
                     MainScreen(navController = navController)
                 }
 
-                // My
+                // Friend
                 composable(FriendNavigationScreens.FriendList.route) {
-                    FriendListScreen()
+                    FriendListScreen(navController = navController)
+                }
+                composable(FriendNavigationScreens.FriendDetail.route) {
+                    FriendDetailScreen(navController = navController)
                 }
             }
         }

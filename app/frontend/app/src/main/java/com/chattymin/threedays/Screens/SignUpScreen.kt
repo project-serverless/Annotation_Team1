@@ -18,21 +18,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.chattymin.threedays.App
 import com.chattymin.threedays.Frame.RoundCornerFrame
 import com.chattymin.threedays.Frame.SearchBar
 import com.chattymin.threedays.R
 import com.chattymin.threedays.ui.theme.Green
 import com.chattymin.threedays.ui.theme.LightGreen
-import com.dongminpark.threedays.Retrofit.RetrofitManager
-import com.dongminpark.threedays.Utils.MESSAGE
-import com.dongminpark.threedays.Utils.RESPONSE_STATE
+import com.chattymin.threedays.Retrofit.RetrofitManager
+import com.chattymin.threedays.Utils.MESSAGE
+import com.chattymin.threedays.Utils.RESPONSE_STATE
+import com.chattymin.threedays.navigation.Screen
 
 @Composable
-fun SignUpScreen(){
+fun SignUpScreen(navController: NavController){
     var ID = remember { mutableStateOf("") }
     var PW = remember { mutableStateOf("") }
     var Email = remember { mutableStateOf("") }
@@ -48,11 +49,14 @@ fun SignUpScreen(){
     var popUp2 by remember{
         mutableStateOf(false)
     }
+    var popUpError by remember{
+        mutableStateOf(false)
+    }
 
     if (popUp) {
         AlertDialog(
             onDismissRequest = {
-                popUp = false
+                //popUp = false
             },
             text = {
                 Column {
@@ -92,16 +96,18 @@ fun SignUpScreen(){
                                         completion = { responseState ->
                                             when (responseState) {
                                                 RESPONSE_STATE.OKAY -> {
-
+                                                    popUp = false
+                                                    popUp2 = true
+                                                    Code.value = ""
                                                 }
                                                 RESPONSE_STATE.FAIL -> {
+                                                    popUp = false
+                                                    popUpError = true
+                                                    Code.value = ""
                                                     Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
                                                 }
                                             }
                                         })
-
-                                    popUp = false
-                                    popUp2 = true
                                 },
                             painter = painterResource(id = R.drawable.send_fill),
                             contentDescription = "send",
@@ -120,6 +126,7 @@ fun SignUpScreen(){
     if (popUp2){
         AlertDialog(
             onDismissRequest = {
+                navController.navigate(Screen.Sign.route)
                 popUp2 = false
             },
             confirmButton = {
@@ -133,8 +140,40 @@ fun SignUpScreen(){
                         RoundCornerFrame(
                             modifier = Modifier
                                 .clickable {
-                                    // 로그인창으로 이동
+                                    navController.navigate(Screen.Login.route)
                                     popUp2 = false
+                                },
+                            maxWidth = 0.5f,
+                            borderColor = Green,
+                            arrangement = Arrangement.Center
+                        ){
+                            Text(text = "확인", color = Green)
+                        }
+                    }
+                }
+
+            },
+            shape = RoundedCornerShape(12.dp),
+            backgroundColor = LightGreen
+        )
+    }
+    if (popUpError){
+        AlertDialog(
+            onDismissRequest = {
+                popUpError = false
+            },
+            confirmButton = {
+                Column() {
+                    Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.Start) {
+                        Text("이메일로 인증번호 오류")
+                        Text("인증 코드를 다시 확인해주세요 😭")
+                    }
+
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        RoundCornerFrame(
+                            modifier = Modifier
+                                .clickable {
+                                    popUpError = false
                                 },
                             maxWidth = 0.5f,
                             borderColor = Green,
@@ -205,7 +244,7 @@ fun SignUpScreen(){
 @Preview
 @Composable
 fun SignUpScreenPreview(){
-    SignUpScreen()
+    //SignUpScreen()
 }
 
 @Preview
