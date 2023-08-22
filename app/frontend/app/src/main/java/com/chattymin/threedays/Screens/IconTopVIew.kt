@@ -1,5 +1,6 @@
 package com.chattymin.threedays.Screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +20,7 @@ import com.chattymin.threedays.ui.theme.Green
 import com.chattymin.threedays.ui.theme.LightGreen
 
 @Composable
-fun IconTopView(isSetting: Boolean = false, padding: Int = 24) {
+fun IconTopView(isSetting: Boolean = false, padding: Int = 24, onClick: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
@@ -50,10 +51,8 @@ fun IconTopView(isSetting: Boolean = false, padding: Int = 24) {
                     modifier = Modifier
                 ) {
                     DropdownMenuItem(
-                        modifier = Modifier.clickable {
-                            // 로그아웃 팝업 띄우기 + 로그아웃
-                        },
                         onClick = {
+                            onClick()
                             expanded = false
                         }) {
                         Text(text = "로그아웃")

@@ -16,7 +16,7 @@ fun FriendDetailScreen(navController: NavController) {
             .fillMaxSize()
             .background(color = LightGreen),
     ) {
-        IconTopView(true)
+        IconTopView(true){}
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -24,9 +24,9 @@ fun FriendDetailScreen(navController: NavController) {
             //verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            UserInfo()
+            //UserInfo()
             Spacer(modifier = Modifier.height(12.dp))
-            TodayGoal()
+            //TodayGoal()
         }
     }
 }

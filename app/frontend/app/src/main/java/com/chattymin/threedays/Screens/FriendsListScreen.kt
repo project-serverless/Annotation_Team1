@@ -46,7 +46,7 @@ fun FriendListScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            IconTopView(isSetting = false, padding = 0)
+            IconTopView(isSetting = false, padding = 0){}
         }
         items(friendsList) {
             Spacer(modifier = Modifier.height(6.dp))

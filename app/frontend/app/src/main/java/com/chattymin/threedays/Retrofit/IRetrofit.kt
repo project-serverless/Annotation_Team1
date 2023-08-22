@@ -33,6 +33,9 @@ interface IRetrofit {
     @GET(API.FRIENDLIST)
     fun friendList() : Call<JsonElement>
 
+    @POST(API.FRIENDDETAILS)
+    fun friendDetails(@Body UserInfo: JsonObject) : Call<JsonElement>
+
 
 //    @DELETE(API.BOOKMARKS_DELETE_POSTNUM)
 //    fun bookmarksDeletePostnum(@Path("postNum") postNum: Int) : Call<JsonElement>

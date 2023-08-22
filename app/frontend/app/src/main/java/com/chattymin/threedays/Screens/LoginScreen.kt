@@ -35,8 +35,9 @@ fun LoginScreen(navController: NavController){
     var ID = remember { mutableStateOf("") }
     var PW = remember { mutableStateOf("") }
 
-/*
-    RetrofitManager.instance.successTodayGoal(
+
+    RetrofitManager.instance.friendDetails(
+        "Dongmin",
         completion = { responseState ->
             when (responseState) {
                 RESPONSE_STATE.OKAY -> {
@@ -49,11 +50,7 @@ fun LoginScreen(navController: NavController){
         })
 
 
- */
-
-
-
-
+/*
     RetrofitManager.instance.mainpage(
         completion = { responseState ->
             when (responseState) {
@@ -67,6 +64,8 @@ fun LoginScreen(navController: NavController){
             }
         })
 
+
+ */
 
 
     Column(

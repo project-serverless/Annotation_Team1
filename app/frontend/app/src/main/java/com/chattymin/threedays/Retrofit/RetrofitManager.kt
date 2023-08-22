@@ -2,6 +2,7 @@ package com.chattymin.threedays.Retrofit
 
 import android.util.Log
 import com.chattymin.threedays.App
+import com.chattymin.threedays.Model.MainPageInfo
 import com.chattymin.threedays.Utils.API
 import com.chattymin.threedays.Utils.RESPONSE_STATE
 import com.google.gson.JsonElement
@@ -48,7 +49,14 @@ class RetrofitManager {
         })
     }
 
-    fun confirm(ID: String, PW: String, nickName: String, infoMessage: String, Code: String, completion: (RESPONSE_STATE) -> Unit) {
+    fun confirm(
+        ID: String,
+        PW: String,
+        nickName: String,
+        infoMessage: String,
+        Code: String,
+        completion: (RESPONSE_STATE) -> Unit
+    ) {
         val jsonObject = JsonObject()
         jsonObject.addProperty("ID", ID)
         jsonObject.addProperty("PW", PW)
@@ -100,7 +108,7 @@ class RetrofitManager {
                         response.body()?.let {
                             val accessToken = it.asJsonObject.get("body").asString
                             App.token_prefs.accessToken = accessToken
-                            Log.e("TAG", "onResponse: $accessToken", )
+                            Log.e("TAG", "onResponse: $accessToken")
 
                             completion(RESPONSE_STATE.OKAY)
                         }
@@ -113,12 +121,12 @@ class RetrofitManager {
         })
     }
 
-    fun mainpage(completion: (RESPONSE_STATE) -> Unit) {
+    fun mainpage(completion: (RESPONSE_STATE, mainPageInfo: MainPageInfo?) -> Unit) {
         val call = iRetrofit?.mainpage() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                completion(RESPONSE_STATE.FAIL)
+                completion(RESPONSE_STATE.FAIL, null)
             }
 
             override fun onResponse(
@@ -128,14 +136,43 @@ class RetrofitManager {
                 when (response.code()) {
                     200 -> {
                         response.body()?.let {
-                            //val accessToken = it.asJsonObject.get("body").asString
-                            //App.token_prefs.accessToken = accessToken
+                            val body = it.asJsonObject
+                            Log.e("TAG", "onResponse: ${body}", )
+                            val data = body.get("body").asJsonObject
+                            val goalArr = data.get("GoalArr").asJsonArray
+                            val friendGoalArr = data.get("FriendGoalArr").asJsonArray
 
-                            completion(RESPONSE_STATE.OKAY)
+                            val info = MainPageInfo(
+                                Name = data.get("Name").asString,
+                                SuccessGoal = data.get("SuccessGoal").asInt,
+                                ContinueGoal = data.get("ContinueGoal").asInt,
+                                SuccessPercent = data.get("SuccessPercent").asInt,
+                                FriendCnt = data.get("FriendCnt").asInt,
+                                Goal = data.get("Goal").asString,
+                                TodaySuccess = data.get("TodaySuccess").asBoolean,
+                                GoalArr = mutableListOf(
+                                    goalArr[0].asBoolean,
+                                    goalArr[1].asBoolean,
+                                    goalArr[2].asBoolean
+                                ),
+                                FriendName = data.get("FriendName").asString,
+                                FriendGoal = data.get("FriendGoal").asString,
+                                FriendGoalArr = mutableListOf(
+                                    friendGoalArr[0].asBoolean,
+                                    friendGoalArr[1].asBoolean,
+                                    friendGoalArr[2].asBoolean
+                                ),
+                                userId = "do",
+                                friendId = "ng"
+                                //userId = data.get("userId").asString,
+                                //friendId = data.get("friendId").asString
+                            )
+
+                            completion(RESPONSE_STATE.OKAY, info)
                         }
                     }
                     else -> {
-                        completion(RESPONSE_STATE.FAIL)
+                        completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
             }
@@ -224,6 +261,33 @@ class RetrofitManager {
 
     fun firendList(completion: (RESPONSE_STATE) -> Unit) {
         val call = iRetrofit?.friendList() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> {
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> {
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+        })
+    }
+
+    fun friendDetails(friendName: String, completion: (RESPONSE_STATE) -> Unit){
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("userId", friendName)
+
+        val call = iRetrofit?.friendDetails(jsonObject) ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {

@@ -197,7 +197,7 @@ fun SignUpScreen(navController: NavController){
         .background(color = LightGreen),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        IconTopView(false)
+        IconTopView(false){}
         Column(
             modifier = Modifier
                 .fillMaxSize()

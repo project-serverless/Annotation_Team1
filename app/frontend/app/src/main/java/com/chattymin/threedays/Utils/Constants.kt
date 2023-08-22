@@ -26,6 +26,7 @@ object API{
     const val SUCCESSTODAGOAL = "successtodaygoal"
 
     const val FRIENDLIST = "friendlist"
+    const val FRIENDDETAILS = "frienddetails"
 }
 
 object MESSAGE{
