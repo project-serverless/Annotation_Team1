@@ -24,6 +24,8 @@ object API{
     const val UPDATEUSERINFO = "updateuserinfo"
 
     const val SUCCESSTODAGOAL = "successtodaygoal"
+
+    const val FRIENDLIST = "friendlist"
 }
 
 object MESSAGE{

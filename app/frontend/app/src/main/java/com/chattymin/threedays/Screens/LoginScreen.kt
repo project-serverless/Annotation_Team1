@@ -40,7 +40,6 @@ fun LoginScreen(navController: NavController){
         completion = { responseState ->
             when (responseState) {
                 RESPONSE_STATE.OKAY -> {
-                    //navController.navigate(Screen.Once.route)
                 }
                 RESPONSE_STATE.FAIL -> {
                     Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
@@ -49,7 +48,9 @@ fun LoginScreen(navController: NavController){
             }
         })
 
+
  */
+
 
 
 
@@ -65,6 +66,7 @@ fun LoginScreen(navController: NavController){
                 }
             }
         })
+
 
 
     Column(

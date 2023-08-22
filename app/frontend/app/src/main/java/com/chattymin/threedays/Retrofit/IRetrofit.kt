@@ -30,6 +30,8 @@ interface IRetrofit {
     @GET(API.SUCCESSTODAGOAL)
     fun successTodayGoal() : Call<JsonElement>
 
+    @GET(API.FRIENDLIST)
+    fun friendList() : Call<JsonElement>
 
 
 //    @DELETE(API.BOOKMARKS_DELETE_POSTNUM)
