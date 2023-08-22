@@ -27,7 +27,8 @@ interface IRetrofit {
     @POST(API.UPDATEUSERINFO)
     fun updateUserInfo(@Body UserInfo: JsonObject) : Call<JsonElement>
 
-
+    @GET(API.SUCCESSTODAGOAL)
+    fun successTodayGoal() : Call<JsonElement>
 
 
 

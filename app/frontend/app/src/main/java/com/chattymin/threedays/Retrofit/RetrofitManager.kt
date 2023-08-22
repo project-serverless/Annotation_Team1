@@ -197,4 +197,28 @@ class RetrofitManager {
             }
         })
     }
+
+    fun successTodayGoal(completion: (RESPONSE_STATE) -> Unit) {
+        val call = iRetrofit?.successTodayGoal() ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> {
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> {
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+        })
+    }
 }

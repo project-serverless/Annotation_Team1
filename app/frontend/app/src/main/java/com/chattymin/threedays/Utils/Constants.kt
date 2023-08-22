@@ -23,6 +23,7 @@ object API{
 
     const val UPDATEUSERINFO = "updateuserinfo"
 
+    const val SUCCESSTODAGOAL = "successtodaygoal"
 }
 
 object MESSAGE{
