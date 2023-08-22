@@ -6,9 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -27,8 +25,10 @@ import com.chattymin.threedays.Frame.*
 import com.chattymin.threedays.R
 import com.chattymin.threedays.Retrofit.RetrofitManager
 import com.chattymin.threedays.Utils.*
+import com.chattymin.threedays.navigation.BottomScreen
 import com.chattymin.threedays.navigation.Screen
 import com.chattymin.threedays.ui.theme.*
+import kotlin.math.exp
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -70,7 +70,7 @@ fun MainScreen(navController: NavController) {
     var userID by rememberSaveable {
         mutableStateOf("")
     }
-    var friendId by rememberSaveable {
+    var FriendId by rememberSaveable {
         mutableStateOf("")
     }
     var GoalArr by rememberSaveable {
@@ -145,7 +145,7 @@ fun MainScreen(navController: NavController) {
                         FriendName = info.FriendName
                         FriendGoal = info.FriendGoal
                         userID = info.userId
-                        friendId = info.friendId
+                        FriendId = info.FriendId
                         GoalArr = info.GoalArr
                         FriendGoalArr = info.FriendGoalArr
                         isLoading = false
@@ -170,8 +170,8 @@ fun MainScreen(navController: NavController) {
                 verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                UserInfo(Name = Name, SuccessGoal = SuccessGoal, ContinueGoal = ContinueGoal, SuccessPercent = SuccessPercent, FriendCnt = FriendCnt)
-                TodayGoal(Goal = Goal, TodaySuccess = TodaySuccess, GoalArr = GoalArr)
+                UserInfo(Name = Name, SuccessGoal = SuccessGoal, ContinueGoal = ContinueGoal, SuccessPercent = SuccessPercent, FriendCnt = FriendCnt, userId = userID)
+                TodayGoal(navController = navController, Goal = Goal, TodaySuccess = TodaySuccess, GoalArr = GoalArr)
                 FriendTodayGoal(FriendName = FriendName, FriendGoal = FriendGoal, FriendGoalArr = FriendGoalArr)
             }
         }
@@ -179,7 +179,8 @@ fun MainScreen(navController: NavController) {
 }
 
 @Composable
-fun UserInfo(Name: String, SuccessGoal: Int, ContinueGoal: Int, SuccessPercent: Int, FriendCnt: Int) {
+fun UserInfo(Name: String, SuccessGoal: Int, ContinueGoal: Int, SuccessPercent: Int, FriendCnt: Int, userId: String) {
+    var expanded by remember { mutableStateOf(false) }
     BoxFrame {
         Column(
             modifier = Modifier
@@ -209,16 +210,38 @@ fun UserInfo(Name: String, SuccessGoal: Int, ContinueGoal: Int, SuccessPercent: 
                         color = LightGreen
                     )
                 }
-                Icon(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clickable {
-                            // 드롭다운 메뉴
-                        },
-                    painter = painterResource(id = R.drawable.menu),
-                    contentDescription = "send",
-                    tint = LightGreen
-                )
+                Column() {
+                    Icon(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clickable {
+                                // 드롭다운 메뉴
+                                expanded = !expanded
+                            },
+                        painter = painterResource(id = R.drawable.menu),
+                        contentDescription = "send",
+                        tint = LightGreen
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                expanded = false
+                            }) {
+                            Text(text = "내 정보 수정")
+                        }
+                        DropdownMenuItem(
+                            onClick = {
+                                CopyToClipboard(App.instance, userId)
+                                expanded = false
+                            }) {
+                            Text(text = "내 ID 공유하기")
+                        }
+                    }
+                }
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -242,7 +265,40 @@ fun Goal(text: String, count: String) {
 }
 
 @Composable
-fun TodayGoal(Goal: String, TodaySuccess: Boolean, GoalArr: MutableList<Boolean>) {
+fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean, GoalArr: MutableList<Boolean>) {
+    var isUpdate by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if (isUpdate){
+        AlertDialog(
+            onDismissRequest = {
+                isUpdate = false
+            },
+            confirmButton = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(modifier = Modifier.padding(24.dp), text = "오늘 미션 완료!!", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        RoundCornerFrame(
+                            modifier = Modifier
+                                .clickable {
+                                    navController.navigate(BottomScreen.Main.screenRoute)
+                                },
+                            maxWidth = 0.6f,
+                            borderColor = Green,
+                            arrangement = Arrangement.Center
+                        ){
+                            Text(text = "확인", color = Green)
+                        }
+                    }
+                }
+            },
+            shape = RoundedCornerShape(12.dp),
+            backgroundColor = LightGreen
+        )
+    }
+
     if (Goal == "NONE") {
         var Goal = remember { mutableStateOf("") }
         BoxFrame {
@@ -322,14 +378,22 @@ fun TodayGoal(Goal: String, TodaySuccess: Boolean, GoalArr: MutableList<Boolean>
                                 .size(48.dp)
                                 .clickable {
                                     // api 호출
+                                    isUpdate = true
+                                    RetrofitManager.instance.successTodayGoal(
+                                        completion = { responseState ->
+                                            when (responseState) {
+                                                RESPONSE_STATE.OKAY -> {}
+                                                RESPONSE_STATE.FAIL -> {
+                                                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        })
                                 },
                             painter = painterResource(id = R.drawable.mission_before),
                             contentDescription = "send",
                             tint = Color.Unspecified
                         )
                     }
-
-
                 }
                 Row(
                     modifier = Modifier
@@ -353,6 +417,8 @@ fun TodayGoal(Goal: String, TodaySuccess: Boolean, GoalArr: MutableList<Boolean>
 
 @Composable
 fun FriendTodayGoal(FriendName: String, FriendGoal: String, FriendGoalArr: MutableList<Boolean>) {
+    var expanded by remember { mutableStateOf(false) }
+
     BoxFrame() {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
@@ -366,16 +432,30 @@ fun FriendTodayGoal(FriendName: String, FriendGoal: String, FriendGoalArr: Mutab
                     fontSize = 18.sp,
                     color = LightGreen
                 )
-                Icon(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clickable {
-                            // 드롭다운 메뉴
-                        },
-                    painter = painterResource(id = R.drawable.menu),
-                    contentDescription = "send",
-                    tint = LightGreen
-                )
+                Column() {
+                    Icon(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clickable {
+                                expanded = !expanded
+                            },
+                        painter = painterResource(id = R.drawable.menu),
+                        contentDescription = "send",
+                        tint = LightGreen
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                expanded = false
+                            }) {
+                            Text(text = "친구 추가하기")
+                        }
+                    }
+                }
             }
             BoxFrame(modifier = Modifier.padding(4.dp), color = LightYellow) {
                 Column(modifier = Modifier.padding(4.dp)) {

@@ -162,10 +162,10 @@ class RetrofitManager {
                                     friendGoalArr[1].asBoolean,
                                     friendGoalArr[2].asBoolean
                                 ),
-                                userId = "do",
-                                friendId = "ng"
-                                //userId = data.get("userId").asString,
-                                //friendId = data.get("friendId").asString
+                                //userId = "do",
+                                //friendId = "ng"
+                                userId = data.get("userId").asString,
+                                FriendId = data.get("FriendId").asString
                             )
 
                             completion(RESPONSE_STATE.OKAY, info)

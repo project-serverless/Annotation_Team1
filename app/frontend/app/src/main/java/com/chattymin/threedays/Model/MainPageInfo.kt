@@ -13,5 +13,5 @@ data class MainPageInfo(
     val FriendGoal: String,
     val FriendGoalArr: MutableList<Boolean>,
     val userId: String,
-    val friendId: String
+    val FriendId: String
 )
