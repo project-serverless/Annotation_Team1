@@ -21,6 +21,8 @@ object API{
 
     const val SETGOAL = "setgoal"
 
+    const val UPDATEUSERINFO = "updateuserinfo"
+
 }
 
 object MESSAGE{

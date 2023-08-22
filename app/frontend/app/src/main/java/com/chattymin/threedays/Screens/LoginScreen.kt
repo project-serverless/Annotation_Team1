@@ -35,9 +35,10 @@ fun LoginScreen(navController: NavController){
     var ID = remember { mutableStateOf("") }
     var PW = remember { mutableStateOf("") }
 
-    /*
-    RetrofitManager.instance.setgoal(
-        "하루에 물 3잔 이상 마시",
+
+    RetrofitManager.instance.updateUserInfo(
+        "동민",
+        "코딩을 때려칠까 고민중입니다.",
         completion = { responseState ->
             when (responseState) {
                 RESPONSE_STATE.OKAY -> {
@@ -50,7 +51,8 @@ fun LoginScreen(navController: NavController){
             }
         })
 
-     */
+
+    /*
     RetrofitManager.instance.mainpage(
         completion = { responseState ->
             when (responseState) {
@@ -63,6 +65,8 @@ fun LoginScreen(navController: NavController){
                 }
             }
         })
+    */
+
 
     Column(
         modifier = Modifier

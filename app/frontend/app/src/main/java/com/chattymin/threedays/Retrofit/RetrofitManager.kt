@@ -168,4 +168,33 @@ class RetrofitManager {
             }
         })
     }
+
+    fun updateUserInfo(nickName: String, comment: String, completion: (RESPONSE_STATE) -> Unit) {
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("PW", "NONE")
+        jsonObject.addProperty("nickName", nickName)
+        jsonObject.addProperty("Comment", comment)
+
+        val call = iRetrofit?.updateUserInfo(jsonObject) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> {
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> {
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+        })
+    }
 }

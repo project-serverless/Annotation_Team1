@@ -23,6 +23,14 @@ interface IRetrofit {
 
     @POST(API.SETGOAL)
     fun setGoal(@Body UserInfo: JsonObject) : Call<JsonElement>
+
+    @POST(API.UPDATEUSERINFO)
+    fun updateUserInfo(@Body UserInfo: JsonObject) : Call<JsonElement>
+
+
+
+
+
 //    @DELETE(API.BOOKMARKS_DELETE_POSTNUM)
 //    fun bookmarksDeletePostnum(@Path("postNum") postNum: Int) : Call<JsonElement>
 //
