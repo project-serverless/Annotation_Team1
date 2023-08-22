@@ -2,9 +2,11 @@ package com.chattymin.threedays.Retrofit
 
 import android.util.Log
 import com.chattymin.threedays.App
+import com.chattymin.threedays.Model.FriendInfo
 import com.chattymin.threedays.Model.MainPageInfo
 import com.chattymin.threedays.Utils.API
 import com.chattymin.threedays.Utils.RESPONSE_STATE
+import com.chattymin.threedays.navigation.FriendNavigationScreens
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import retrofit2.Call
@@ -259,12 +261,12 @@ class RetrofitManager {
         })
     }
 
-    fun firendList(completion: (RESPONSE_STATE) -> Unit) {
+    fun friendList(completion: (RESPONSE_STATE, friendsList: MutableList<FriendInfo>?) -> Unit) {
         val call = iRetrofit?.friendList() ?: return
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                completion(RESPONSE_STATE.FAIL)
+                completion(RESPONSE_STATE.FAIL, null)
             }
 
             override fun onResponse(
@@ -273,10 +275,32 @@ class RetrofitManager {
             ) {
                 when (response.code()) {
                     200 -> {
-                        completion(RESPONSE_STATE.OKAY)
+                        response.body()?.let {
+                            val friendInfos = mutableListOf<FriendInfo>()
+                            val body = it.asJsonObject
+                            val data = body.getAsJsonArray("body")
+
+                            data.forEach {
+                                val item = it.asJsonObject
+                                val friend = FriendInfo(
+                                    Name = item.get("Name").asString,
+                                    UserId = item.get("UserId").asString,
+                                    Comment = item.get("Comment").asString,
+                                    TodaySuccess = item.get("TodaySuccess").asBoolean,
+                                    GoalArr = mutableListOf(
+                                        item.get("GoalArr").asJsonArray[0].asBoolean,
+                                        item.get("GoalArr").asJsonArray[1].asBoolean,
+                                        item.get("GoalArr").asJsonArray[2].asBoolean
+                                    ),
+                                    Goal = item.get("Goal").asString
+                                )
+                                friendInfos.add(friend)
+                            }
+                            completion(RESPONSE_STATE.OKAY, friendInfos)
+                        }
                     }
                     else -> {
-                        completion(RESPONSE_STATE.FAIL)
+                        completion(RESPONSE_STATE.FAIL, null)
                     }
                 }
             }
