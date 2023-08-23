@@ -21,6 +21,9 @@ interface IRetrofit {
     @GET(API.MAINPAGE)
     fun mainpage() : Call<JsonElement>
 
+    @POST(API.ADDFRIEND)
+    fun addfriend(@Body UserInfo: JsonObject) : Call<JsonElement>
+
     @POST(API.SETGOAL)
     fun setGoal(@Body UserInfo: JsonObject) : Call<JsonElement>
 

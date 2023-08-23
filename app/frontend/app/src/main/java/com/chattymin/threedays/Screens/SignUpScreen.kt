@@ -214,21 +214,29 @@ fun SignUpScreen(navController: NavController){
                 modifier = Modifier
                     .clickable {
                     // api 호출 and 팝업
-                        RetrofitManager.instance.signup(
-                            ID = ID.value,
-                            PW = PW.value,
-                            Email = Email.value,
-                            completion = { responseState ->
-                                when (responseState) {
-                                    RESPONSE_STATE.OKAY -> {
+                        if (PW.value.length >= 8) {
+                            RetrofitManager.instance.signup(
+                                ID = ID.value,
+                                PW = PW.value,
+                                Email = Email.value,
+                                completion = { responseState ->
+                                    when (responseState) {
+                                        RESPONSE_STATE.OKAY -> {
 
+                                        }
+                                        RESPONSE_STATE.FAIL -> {
+                                            Toast.makeText(
+                                                App.instance,
+                                                MESSAGE.ERROR,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     }
-                                    RESPONSE_STATE.FAIL -> {
-                                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            })
-                        popUp = true
+                                })
+                            popUp = true
+                        }else{
+                            Toast.makeText(App.instance, "비밀번호는 숫자,영어,특수문자를 포함하여 8자 이상이어야합니다.", Toast.LENGTH_SHORT).show()
+                        }
                 },
                 maxWidth = 0.8f,
                 borderColor = Green,

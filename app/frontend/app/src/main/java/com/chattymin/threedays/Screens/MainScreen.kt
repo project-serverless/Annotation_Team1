@@ -27,6 +27,8 @@ import com.chattymin.threedays.R
 import com.chattymin.threedays.Retrofit.RetrofitManager
 import com.chattymin.threedays.Utils.*
 import com.chattymin.threedays.navigation.BottomScreen
+import com.chattymin.threedays.navigation.FriendNavigationScreens
+import com.chattymin.threedays.navigation.MainNavigationScreens
 import com.chattymin.threedays.navigation.Screen
 import com.chattymin.threedays.ui.theme.*
 import kotlin.math.exp
@@ -173,7 +175,7 @@ fun MainScreen(navController: NavController) {
             ) {
                 UserInfo(Name = Name, SuccessGoal = SuccessGoal, ContinueGoal = ContinueGoal, SuccessPercent = SuccessPercent, FriendCnt = FriendCnt, userId = userID)
                 TodayGoal(navController = navController, Goal = Goal, TodaySuccess = TodaySuccess, GoalArr = GoalArr)
-                FriendTodayGoal(FriendName = FriendName, FriendGoal = FriendGoal, FriendGoalArr = FriendGoalArr)
+                FriendTodayGoal(navController, userId = userID,FriendName = FriendName, FriendGoal = FriendGoal, FriendGoalArr = FriendGoalArr)
             }
         }
     }
@@ -561,10 +563,25 @@ fun TodayGoal(navController: NavController, Goal: MutableState<String>, TodaySuc
 }
 
 @Composable
-fun FriendTodayGoal(FriendName: String, FriendGoal: String, FriendGoalArr: MutableList<Boolean>) {
+fun FriendTodayGoal(navController: NavController, userId: String, FriendName: String, FriendGoal: String, FriendGoalArr: MutableList<Boolean>) {
     var expanded by remember { mutableStateOf(false) }
 
     var addFriend by remember { mutableStateOf(false) }
+    var isUpdate by remember { mutableStateOf(false) }
+
+    if (isUpdate){
+        AlertDialog(
+            onDismissRequest = {
+            },
+            confirmButton = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(modifier = Modifier.padding(24.dp), text = "친구 추가중...", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                }
+            },
+            shape = RoundedCornerShape(12.dp),
+            backgroundColor = LightGreen
+        )
+    }
 
     if (addFriend){
         var friendId = remember { mutableStateOf("") }
@@ -599,6 +616,28 @@ fun FriendTodayGoal(FriendName: String, FriendGoal: String, FriendGoalArr: Mutab
                             modifier = Modifier
                                 .size(40.dp)
                                 .clickable {
+                                    isUpdate = true
+                                    RetrofitManager.instance.addFriend(
+                                        userId = userId,
+                                        FriendId = friendId.value,
+                                        completion = { responseState ->
+                                            when (responseState) {
+                                                RESPONSE_STATE.OKAY -> {
+                                                    navController.navigate(MainNavigationScreens.Main.route)
+                                                    isUpdate = false
+                                                }
+                                                RESPONSE_STATE.FAIL -> {
+                                                    isUpdate = false
+                                                    Toast
+                                                        .makeText(
+                                                            App.instance,
+                                                            MESSAGE.ERROR,
+                                                            Toast.LENGTH_SHORT
+                                                        )
+                                                        .show()
+                                                }
+                                            }
+                                        })
                                 },
                             painter = painterResource(id = R.drawable.send_fill),
                             contentDescription = "send",

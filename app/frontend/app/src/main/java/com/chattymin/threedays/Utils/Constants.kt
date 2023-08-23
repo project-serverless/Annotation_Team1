@@ -19,6 +19,8 @@ object API{
 
     const val MAINPAGE = "mainpage"
 
+    const val ADDFRIEND = "addfriend"
+
     const val SETGOAL = "setgoal"
 
     const val UPDATEUSERINFO = "updateuserinfo"

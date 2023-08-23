@@ -181,6 +181,36 @@ class RetrofitManager {
         })
     }
 
+    fun addFriend(userId: String, FriendId: String, completion: (RESPONSE_STATE) -> Unit){
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("userId", userId)
+        jsonObject.addProperty("FriendId", FriendId)
+
+        val call = iRetrofit?.addfriend(jsonObject) ?: return
+
+        call.enqueue(object : retrofit2.Callback<JsonElement> {
+            override fun onFailure(call: Call<JsonElement>, t: Throwable) {
+                completion(RESPONSE_STATE.FAIL)
+            }
+
+            override fun onResponse(
+                call: Call<JsonElement>,
+                response: Response<JsonElement>
+            ) {
+                when (response.code()) {
+                    200 -> {
+                        completion(RESPONSE_STATE.OKAY)
+                    }
+                    else -> {
+                        completion(RESPONSE_STATE.FAIL)
+                    }
+                }
+            }
+        })
+    }
+
+
+
     fun setgoal(Goal: String, completion: (RESPONSE_STATE) -> Unit) {
         val jsonObject = JsonObject()
         jsonObject.addProperty("Goal", Goal)
