@@ -3,7 +3,6 @@ import boto3
 import os
 from boto3.dynamodb.conditions import Key
 
-
 def getTable():
     
     table_name = "team1-ICN-user-table"
@@ -16,21 +15,22 @@ def lambda_handler(event, context):
     
     table = getTable()
     client =boto3.client('cognito-idp')
-    access_token = event["params"]['header']['Authorization']
+    #access_token = event["params"]['header']['Authorization']
 
-    result = client.get_user(
-            AccessToken = access_token
-    )
+    #result = client.get_user(
+    #        AccessToken = access_token
+    #)
     
     response = table.query(
-        KeyConditionExpression=Key('userId').eq(result['Username'])
+        KeyConditionExpression=Key('userId').eq('Dongmin')
     )
    
     previousPassword = response['Items'][0]['password']
     proposedPassword = event['body-json']['PW']
-    nickname = event['body-json']['NickName']
+    nickname = event['body-json']['nickName']
     comment = event['body-json']['Comment']
 
+    '''
     #password 수정
     if not proposedPassword == "NONE" :
         response=update_userPassword(table,response['Items'][0]['userId'],access_token,previousPassword,proposedPassword)
@@ -38,27 +38,27 @@ def lambda_handler(event, context):
             'statusCode': response['statusCode'],
             'body': json.dumps('password update!')
         }
+    '''
     #nickname 수정
     if not nickname == "NONE" :
-        update_userNickname(table,result['Username'],nickname)
-        return {
-            'statusCode': 200,
-            'body': json.dumps('nickname update!')
-        }
+        update_userNickname(table,'Dongmin',nickname)
+        type = "nickname"
     #infomessage 수정
     if not comment == "NONE" :
-        update_userinfoMessage(table,result['Username'],comment)
-        return {
-            'statusCode': 200,
-            'body': json.dumps('comment update!')
-        }
+        update_userinfoMessage(table,'Dongmin',comment)
+        type = "Comment"
     else : 
         return {
-            'statusCode': 200,
-            'body': json.dumps('수정완료')
+            'statusCode': 203,
+            'body': json.dumps('정보 변경 없음')
         }
+    
+    return {
+        'statusCode': 200,
+        'body': json.dumps('수정 완료')
+    }
 
-
+'''
 #패스워드 변경
 def update_userPassword(table,userId,access_token,previousPassword,proposedPassword):
     client =boto3.client('cognito-idp')
@@ -101,7 +101,7 @@ def update_userPassword(table,userId,access_token,previousPassword,proposedPassw
             "statusCode": 200, 
             "message": "Success", 
             "data": None}
-            
+'''            
 #닉네임 변경
 def update_userNickname(table,userId,nickname):
     table.update_item(
