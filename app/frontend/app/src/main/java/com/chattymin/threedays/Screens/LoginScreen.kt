@@ -20,18 +20,18 @@ import androidx.navigation.NavController
 import com.chattymin.threedays.App
 import com.chattymin.threedays.Frame.RoundCornerFrame
 import com.chattymin.threedays.Frame.SearchBar
-import com.chattymin.threedays.Navigation.MainScreenView
 import com.chattymin.threedays.R
 import com.chattymin.threedays.Retrofit.RetrofitManager
+import com.chattymin.threedays.Utils.BackOnPressed
 import com.chattymin.threedays.Utils.MESSAGE
 import com.chattymin.threedays.Utils.RESPONSE_STATE
-import com.chattymin.threedays.navigation.BottomScreen
 import com.chattymin.threedays.navigation.Screen
 import com.chattymin.threedays.ui.theme.Green
 import com.chattymin.threedays.ui.theme.LightGreen
 
 @Composable
 fun LoginScreen(navController: NavController){
+    BackOnPressed()
     var ID = remember { mutableStateOf("") }
     var PW = remember { mutableStateOf("") }
 

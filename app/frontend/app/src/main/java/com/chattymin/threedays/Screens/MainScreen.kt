@@ -574,7 +574,7 @@ fun FriendTodayGoal(navController: NavController, userId: String, FriendName: St
             onDismissRequest = {
             },
             confirmButton = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                     Text(modifier = Modifier.padding(24.dp), text = "친구 추가중...", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 }
             },
@@ -693,22 +693,70 @@ fun FriendTodayGoal(navController: NavController, userId: String, FriendName: St
                     }
                 }
             }
-            BoxFrame(modifier = Modifier.padding(4.dp), color = LightYellow) {
-                Column(modifier = Modifier.padding(4.dp)) {
-                    Column(modifier = Modifier.padding(top = 4.dp, start = 8.dp, bottom = 4.dp)) {
-                        Text(modifier = Modifier, text = FriendName, color = Green, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                        Text(modifier = Modifier, text = FriendGoal, color = Color.Black, fontSize = 12.sp)
-                    }
+            if(FriendGoal != "NONE") {
+                BoxFrame(modifier = Modifier.padding(4.dp), color = LightYellow) {
+                    Column(modifier = Modifier.padding(4.dp)) {
+                        Column(
+                            modifier = Modifier.padding(
+                                top = 4.dp,
+                                start = 8.dp,
+                                bottom = 4.dp
+                            )
+                        ) {
+                            Text(
+                                modifier = Modifier,
+                                text = FriendName,
+                                color = Green,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                modifier = Modifier,
+                                text = FriendGoal,
+                                color = Color.Black,
+                                fontSize = 12.sp
+                            )
+                        }
 
-                    Row() {
-                        SmallBoxFrame(size = 100) {
-                            DayBoolean(text = "Day 1", id = if (FriendGoalArr[0]) R.drawable.checkcircle_solid else R.drawable.checkcircle_outline)
+                        Row() {
+                            SmallBoxFrame(size = 100) {
+                                DayBoolean(
+                                    text = "Day 1",
+                                    id = if (FriendGoalArr[0]) R.drawable.checkcircle_solid else R.drawable.checkcircle_outline
+                                )
+                            }
+                            SmallBoxFrame(size = 100) {
+                                DayBoolean(
+                                    text = "Day 2",
+                                    id = if (FriendGoalArr[1]) R.drawable.checkcircle_solid else R.drawable.checkcircle_outline
+                                )
+                            }
+                            SmallBoxFrame(size = 100) {
+                                DayBoolean(
+                                    text = "Day 3",
+                                    id = if (FriendGoalArr[2]) R.drawable.checkcircle_solid else R.drawable.checkcircle_outline
+                                )
+                            }
                         }
-                        SmallBoxFrame(size = 100) {
-                            DayBoolean(text = "Day 2", id = if (FriendGoalArr[1]) R.drawable.checkcircle_solid else R.drawable.checkcircle_outline)
-                        }
-                        SmallBoxFrame(size = 100) {
-                            DayBoolean(text = "Day 3", id = if (FriendGoalArr[2]) R.drawable.checkcircle_solid else R.drawable.checkcircle_outline)
+                    }
+                }
+            }else{
+                BoxFrame(modifier = Modifier.padding(4.dp), color = LightYellow) {
+                    Column(modifier = Modifier.padding(4.dp).height(100.dp)) {
+                        Column(
+                            modifier = Modifier.padding(
+                                top = 4.dp,
+                                start = 8.dp,
+                                bottom = 4.dp
+                            )
+                        ) {
+                            Text(
+                                modifier = Modifier,
+                                text = "친구의 목표가 없어요 :(",
+                                color = Green,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }

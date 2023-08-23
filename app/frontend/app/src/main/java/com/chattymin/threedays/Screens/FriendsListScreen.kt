@@ -168,6 +168,7 @@ fun FriendItem(navController: NavController, friendInfo: FriendInfo) {
                         .size(60.dp),
                     painter = painterResource(id = if (friendInfo.TodaySuccess) R.drawable.mission_after else R.drawable.mission_before),
                     contentDescription = "send",
+                    tint = Color.Unspecified
                 )
             }
         }

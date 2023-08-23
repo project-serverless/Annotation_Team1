@@ -109,9 +109,9 @@ class RetrofitManager {
                 when (response.code()) {
                     200 -> {
                         response.body()?.let {
-                            val accessToken = it.asJsonObject.get("body").asString
-                            App.token_prefs.accessToken = accessToken
-                            Log.e("TAG", "onResponse: $accessToken")
+                            //val accessToken = it.asJsonObject.get("body").asString
+                            //App.token_prefs.accessToken = accessToken
+                            //Log.e("TAG", "onResponse: $accessToken")
 
                             completion(RESPONSE_STATE.OKAY)
                         }
