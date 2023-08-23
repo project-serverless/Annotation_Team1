@@ -25,10 +25,10 @@ fun FriendDetailScreen(navController: NavController, userId: String) {
     var isLoading by rememberSaveable {
         mutableStateOf(true)
     }
-    var Name by rememberSaveable {
+    var Name = rememberSaveable {
         mutableStateOf("")
     }
-    var Comment by rememberSaveable {
+    var Comment = rememberSaveable {
         mutableStateOf("")
     }
     var SuccessGoal by rememberSaveable {
@@ -62,8 +62,8 @@ fun FriendDetailScreen(navController: NavController, userId: String) {
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
 
-                        Name = info!!.Name
-                        Comment = info.Comment
+                        Name.value = info!!.Name
+                        Comment.value = info.Comment
                         SuccessGoal = info.SuccessGoal
                         ContinueGoal = info.ContinueGoal
                         //SuccessPercent = info.SuccessPercent

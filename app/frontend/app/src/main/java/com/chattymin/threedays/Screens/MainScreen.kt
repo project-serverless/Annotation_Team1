@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -40,7 +41,7 @@ fun MainScreen(navController: NavController) {
     }
 
     // MainPageInfo 가져오기
-    var Name by rememberSaveable {
+    var Name = rememberSaveable {
         mutableStateOf("")
     }
     var SuccessGoal by rememberSaveable {
@@ -135,7 +136,7 @@ fun MainScreen(navController: NavController) {
             completion = { responseState, info ->
                 when (responseState) {
                     RESPONSE_STATE.OKAY -> {
-                        Name = info!!.Name
+                        Name.value = info!!.Name
                         SuccessGoal = info.SuccessGoal
                         ContinueGoal = info.ContinueGoal
                         SuccessPercent = info.SuccessPercent
@@ -179,12 +180,96 @@ fun MainScreen(navController: NavController) {
 }
 
 @Composable
-fun UserInfo(Name: String, SuccessGoal: Int, ContinueGoal: Int, SuccessPercent: Int, FriendCnt: Int, userId: String, Comment: String = "", isMine: Boolean = true) {
+fun UserInfo(Name: MutableState<String>, SuccessGoal: Int, ContinueGoal: Int, SuccessPercent: Int, FriendCnt: Int, userId: String, Comment: MutableState<String> = mutableStateOf(""), isMine: Boolean = true) {
     var expanded by remember { mutableStateOf(false) }
     var changeInfo by remember { mutableStateOf(false) }
+    var changeInfo2 by remember { mutableStateOf(false) }
+
+    var NameTemp = remember { mutableStateOf(Name.value) }
+    var CommentTemp = remember { mutableStateOf(Comment.value) }
+
+    if (changeInfo2){
+        AlertDialog(
+            onDismissRequest = {
+                changeInfo2 = false
+            },
+            confirmButton = {
+                Column() {
+                    Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.Start) {
+                        Text("정보 수정 완료!")
+                        Text("작심3일을 마음껏 즐겨주세요 :)")
+                    }
+
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        RoundCornerFrame(
+                            modifier = Modifier
+                                .clickable {
+                                    changeInfo2 = false
+                                },
+                            maxWidth = 0.5f,
+                            borderColor = Green,
+                            arrangement = Arrangement.Center
+                        ){
+                            Text(text = "확인", color = Green)
+                        }
+                    }
+                }
+
+            },
+            shape = RoundedCornerShape(12.dp),
+            backgroundColor = LightGreen
+        )
+    }
 
     if (changeInfo){
+        AlertDialog(
+            onDismissRequest = {
+                changeInfo = false
+            },
+            confirmButton = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(modifier = Modifier.padding(24.dp), text = "내 정보 수정", fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
+                    SearchBar(text = "이름", searchText = NameTemp, imeAction = ImeAction.Next){
+                        NameTemp.value = it
+                    }
+                    SearchBar(text = "소개글",searchText = Comment, imeAction = ImeAction.Done){
+                        CommentTemp.value = it
+                    }
+
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        RoundCornerFrame(
+                            modifier = Modifier
+                                .clickable {
+                                    changeInfo2 = true
+                                    RetrofitManager.instance.updateUserInfo(
+                                        NameTemp.value,
+                                        CommentTemp.value,
+                                        completion = { responseState ->
+                                            when (responseState) {
+                                                RESPONSE_STATE.OKAY -> {
+                                                    Name.value = NameTemp.value
+                                                    changeInfo = false
+                                                }
+                                                RESPONSE_STATE.FAIL -> {
+                                                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
+                                                        .show()
+                                                }
+                                            }
+                                        })
+                                },
+                            maxWidth = 0.6f,
+                            borderColor = Green,
+                            arrangement = Arrangement.Center
+                        ){
+                            Text(text = "수정하기", color = Green)
+                        }
+                    }
+                }
+            },
+            shape = RoundedCornerShape(12.dp),
+            backgroundColor = LightGreen
+        )
     }
 
     BoxFrame {
@@ -210,7 +295,7 @@ fun UserInfo(Name: String, SuccessGoal: Int, ContinueGoal: Int, SuccessPercent: 
                         contentScale = ContentScale.Crop
                     )
                     Text(
-                        text = "${Name}님\n" + if (Comment.isEmpty()) "반갑습니다:)" else Comment,
+                        text = "${Name.value}님\n" + if (Comment.value.isEmpty()) "반갑습니다:)" else Comment.value,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = LightGreen
