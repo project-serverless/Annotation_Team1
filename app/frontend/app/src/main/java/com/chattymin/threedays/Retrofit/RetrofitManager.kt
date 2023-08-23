@@ -333,6 +333,7 @@ class RetrofitManager {
                                 Comment = data.get("Comment").asString,
                                 SuccessGoal = data.get("SuccessGoal").asInt,
                                 ContinueGoal = data.get("ContinueGoal").asInt,
+                                SuccessPercent = data.get("SuccessPercent").asInt,
                                 FriendCnt = data.get("FriendCnt").asInt,
                                 Goal = data.get("Goal").asString,
                                 GoalArr = mutableListOf(

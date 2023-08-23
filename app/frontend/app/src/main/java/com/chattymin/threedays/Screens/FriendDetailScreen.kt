@@ -66,7 +66,7 @@ fun FriendDetailScreen(navController: NavController, userId: String) {
                         Comment.value = info.Comment
                         SuccessGoal = info.SuccessGoal
                         ContinueGoal = info.ContinueGoal
-                        //SuccessPercent = info.SuccessPercent
+                        SuccessPercent = info.SuccessPercent
                         FriendCnt = info.FriendCnt
                         Goal = info.Goal
                         TodaySuccess = info.TodaySuccess

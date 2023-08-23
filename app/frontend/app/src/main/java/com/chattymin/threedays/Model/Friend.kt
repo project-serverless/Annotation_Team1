@@ -5,7 +5,7 @@ data class Friend(
     val Comment: String,
     val SuccessGoal: Int,
     val ContinueGoal: Int,
-    //val SuccessPercent: Int,
+    val SuccessPercent: Int,
     val FriendCnt: Int,
     val Goal: String,
     val GoalArr: MutableList<Boolean>,

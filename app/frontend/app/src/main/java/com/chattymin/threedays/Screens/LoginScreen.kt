@@ -35,24 +35,6 @@ fun LoginScreen(navController: NavController){
     var ID = remember { mutableStateOf("") }
     var PW = remember { mutableStateOf("") }
 
-/*
-    RetrofitManager.instance.mainpage(
-        completion = { responseState ->
-            when (responseState) {
-                RESPONSE_STATE.OKAY -> {
-                    //navController.navigate(Screen.Once.route)
-                }
-                RESPONSE_STATE.FAIL -> {
-                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        })
-
-
- */
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -81,24 +63,24 @@ fun LoginScreen(navController: NavController){
 
             RoundCornerFrame(
                 modifier = Modifier.clickable {
-                    navController.navigate(Screen.Once.route)
-                    /*
-                    RetrofitManager.instance.login(
-                        ID = ID.value,
-                        PW = PW.value,
-                        completion = { responseState ->
-                            when (responseState) {
-                                RESPONSE_STATE.OKAY -> {
-                                    navController.navigate(Screen.Once.route)
+                    if (ID.value.isNotEmpty() && PW.value.isNotEmpty()){
+                        RetrofitManager.instance.login(
+                            ID = ID.value,
+                            PW = PW.value,
+                            completion = { responseState ->
+                                when (responseState) {
+                                    RESPONSE_STATE.OKAY -> {
+                                        navController.navigate(Screen.Once.route)
+                                    }
+                                    RESPONSE_STATE.FAIL -> {
+                                        Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
                                 }
-                                RESPONSE_STATE.FAIL -> {
-                                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
-                                        .show()
-                                }
-                            }
-                        })
+                            })
+                    }
 
-                     */
+                    navController.navigate(Screen.Once.route)
                 },
                 borderColor = Green,
                 arrangement = Arrangement.Center

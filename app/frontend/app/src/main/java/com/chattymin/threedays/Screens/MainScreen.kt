@@ -228,6 +228,18 @@ fun UserInfo(Name: MutableState<String>, SuccessGoal: Int, ContinueGoal: Int, Su
             },
             confirmButton = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopEnd) {
+                        Icon(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    changeInfo = false
+                                },
+                            painter = painterResource(id = R.drawable.x),
+                            contentDescription = "popDown",
+                            tint = Color.Black
+                        )
+                    }
                     Text(modifier = Modifier.padding(24.dp), text = "내 정보 수정", fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
                     SearchBar(text = "이름", searchText = NameTemp, imeAction = ImeAction.Next){
@@ -479,11 +491,13 @@ fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean,
                                                 when (responseState) {
                                                     RESPONSE_STATE.OKAY -> {}
                                                     RESPONSE_STATE.FAIL -> {
-                                                        Toast.makeText(
-                                                            App.instance,
-                                                            MESSAGE.ERROR,
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
+                                                        Toast
+                                                            .makeText(
+                                                                App.instance,
+                                                                MESSAGE.ERROR,
+                                                                Toast.LENGTH_SHORT
+                                                            )
+                                                            .show()
                                                     }
                                                 }
                                             })
@@ -519,6 +533,58 @@ fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean,
 fun FriendTodayGoal(FriendName: String, FriendGoal: String, FriendGoalArr: MutableList<Boolean>) {
     var expanded by remember { mutableStateOf(false) }
 
+    var addFriend by remember { mutableStateOf(false) }
+
+    if (addFriend){
+        var friendId = remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = {
+                addFriend = false
+            },
+            text = {
+                Column {
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
+                        Column(modifier = Modifier
+                            .padding(start = 12.dp, bottom = 12.dp, end = 12.dp), horizontalAlignment = Alignment.Start) {
+                            Text("친구의 ID를 입력해주세요 :)", fontWeight = FontWeight.Bold)
+                        }
+                        Icon(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .clickable {
+                                    addFriend = false
+                                },
+                            painter = painterResource(id = R.drawable.x),
+                            contentDescription = "popDown",
+                            tint = Color.Black
+                        )
+                    }
+
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){
+                        SearchBar(text = "ID", searchText = friendId, maxWidth = 0.9f, imeAction = ImeAction.Done,onSearch = {})
+                        Icon(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable {
+                                },
+                            painter = painterResource(id = R.drawable.send_fill),
+                            contentDescription = "send",
+                            tint = Green
+                        )
+                    }
+                }
+
+            },
+            confirmButton = {},
+            shape = RoundedCornerShape(12.dp),
+            backgroundColor = LightGreen
+        )
+    }
+
+
     BoxFrame() {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
@@ -550,6 +616,7 @@ fun FriendTodayGoal(FriendName: String, FriendGoal: String, FriendGoalArr: Mutab
                     ) {
                         DropdownMenuItem(
                             onClick = {
+                                addFriend = true
                                 expanded = false
                             }) {
                             Text(text = "친구 추가하기")
