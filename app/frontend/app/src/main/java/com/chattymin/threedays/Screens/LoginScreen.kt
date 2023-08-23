@@ -79,8 +79,6 @@ fun LoginScreen(navController: NavController){
                                 }
                             })
                     }
-
-                    navController.navigate(Screen.Once.route)
                 },
                 borderColor = Green,
                 arrangement = Arrangement.Center
