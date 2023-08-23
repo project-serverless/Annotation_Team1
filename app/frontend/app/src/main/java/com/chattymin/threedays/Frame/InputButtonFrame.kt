@@ -26,6 +26,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +64,7 @@ fun SearchBar(text:String, searchText: MutableState<String>, maxWidth: Float = 0
                 .weight(1f)
                 .padding(start = 8.dp, end = 8.dp),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = imeAction),
+            visualTransformation = if (text != "PW") VisualTransformation.None else PasswordVisualTransformation(),
             keyboardActions = KeyboardActions(
                 onNext = {
                     onSearch(searchText.value)
