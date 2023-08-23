@@ -56,7 +56,7 @@ fun MainScreen(navController: NavController) {
     var FriendCnt by rememberSaveable {
         mutableStateOf(0)
     }
-    var Goal by rememberSaveable {
+    var Goal = rememberSaveable {
         mutableStateOf("")
     }
     var TodaySuccess by rememberSaveable {
@@ -141,7 +141,7 @@ fun MainScreen(navController: NavController) {
                         ContinueGoal = info.ContinueGoal
                         SuccessPercent = info.SuccessPercent
                         FriendCnt = info.FriendCnt
-                        Goal = info.Goal
+                        Goal.value = info.Goal
                         TodaySuccess = info.TodaySuccess
                         FriendName = info.FriendName
                         FriendGoal = info.FriendGoal
@@ -371,9 +371,43 @@ fun Goal(text: String, count: String) {
 }
 
 @Composable
-fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean, GoalArr: MutableList<Boolean>, isMine: Boolean = true) {
+fun TodayGoal(navController: NavController, Goal: MutableState<String>, TodaySuccess: Boolean, GoalArr: MutableList<Boolean>, isMine: Boolean = true) {
     var isUpdate by rememberSaveable {
         mutableStateOf(false)
+    }
+    var changeInfo by remember { mutableStateOf(false) }
+
+    if (changeInfo){
+        AlertDialog(
+            onDismissRequest = {
+                changeInfo = false
+            },
+            confirmButton = {
+                Column() {
+                    Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.Start) {
+                        Text("목표 설정 완료!")
+                        Text("3일동안 목표를 지켜봐요 :)")
+                    }
+
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                        RoundCornerFrame(
+                            modifier = Modifier
+                                .clickable {
+                                    changeInfo = false
+                                },
+                            maxWidth = 0.5f,
+                            borderColor = Green,
+                            arrangement = Arrangement.Center
+                        ){
+                            Text(text = "확인", color = Green)
+                        }
+                    }
+                }
+
+            },
+            shape = RoundedCornerShape(12.dp),
+            backgroundColor = LightGreen
+        )
     }
 
     if (isUpdate){
@@ -405,8 +439,8 @@ fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean,
         )
     }
 
-    if (Goal == "NONE" && isMine){
-        var Goal = remember { mutableStateOf("") }
+    if (Goal.value == "NONE" && isMine){
+        var GoalTemp = remember { mutableStateOf("") }
         BoxFrame {
             Column(
                 modifier = Modifier.padding(12.dp),
@@ -418,19 +452,18 @@ fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean,
                     fontSize = 18.sp,
                     color = LightGreen
                 )
-                SearchBar2(searchText = Goal){
-                    Goal.value = it
+                SearchBar2(searchText = GoalTemp){
+                    GoalTemp.value = it
                 }
                 RoundCornerFrame(
                     modifier = Modifier.clickable {
-                        /*
-                        RetrofitManager.instance.login(
-                            ID = ID.value,
-                            PW = PW.value,
+                        changeInfo = true
+                        RetrofitManager.instance.setgoal(
+                            GoalTemp.value,
                             completion = { responseState ->
                                 when (responseState) {
                                     RESPONSE_STATE.OKAY -> {
-                                        navController.navigate(Screen.Once.route)
+                                        Goal.value = GoalTemp.value
                                     }
                                     RESPONSE_STATE.FAIL -> {
                                         Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
@@ -438,8 +471,6 @@ fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean,
                                     }
                                 }
                             })
-
-                         */
                     },
                     borderColor = Green,
                     arrangement = Arrangement.Center
@@ -458,7 +489,7 @@ fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean,
                 ) {
                     Column() {
                         Text(
-                            text = Goal,
+                            text = Goal.value,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             color = Color.Black
@@ -559,7 +590,6 @@ fun FriendTodayGoal(FriendName: String, FriendGoal: String, FriendGoalArr: Mutab
                             tint = Color.Black
                         )
                     }
-
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),

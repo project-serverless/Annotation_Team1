@@ -43,7 +43,7 @@ fun FriendDetailScreen(navController: NavController, userId: String) {
     var FriendCnt by rememberSaveable {
         mutableStateOf(0)
     }
-    var Goal by rememberSaveable {
+    var Goal = rememberSaveable {
         mutableStateOf("")
     }
     var TodaySuccess by rememberSaveable {
@@ -68,7 +68,7 @@ fun FriendDetailScreen(navController: NavController, userId: String) {
                         ContinueGoal = info.ContinueGoal
                         SuccessPercent = info.SuccessPercent
                         FriendCnt = info.FriendCnt
-                        Goal = info.Goal
+                        Goal.value = info.Goal
                         TodaySuccess = info.TodaySuccess
                         GoalArr = info.GoalArr
 
