@@ -1,5 +1,6 @@
 package com.chattymin.threedays.Navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -10,10 +11,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.chattymin.threedays.Screens.*
 import com.chattymin.threedays.navigation.*
 import com.chattymin.threedays.ui.theme.Green
@@ -106,9 +109,20 @@ fun MainScreenView(startDestination: String) {
                 composable(FriendNavigationScreens.FriendList.route) {
                     FriendListScreen(navController = navController)
                 }
-                composable(FriendNavigationScreens.FriendDetail.route) {
-                    FriendDetailScreen(navController = navController)
+                composable(
+                    route = "${FriendNavigationScreens.FriendDetail.route}/{variable}",
+                    arguments = listOf(navArgument("variable") { type = NavType.StringType })
+                ) { entry ->
+                    val variable = entry.arguments?.getString("variable")
+                    FriendDetailScreen(
+                        navController = navController,
+                        userId = variable!!.toString()
+                    )
                 }
+
+//                composable(FriendNavigationScreens.FriendDetail.route) {
+//                    FriendDetailScreen(navController = navController, "")
+//                }
             }
         }
     }

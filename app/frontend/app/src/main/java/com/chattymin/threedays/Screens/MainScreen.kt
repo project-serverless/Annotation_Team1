@@ -179,8 +179,14 @@ fun MainScreen(navController: NavController) {
 }
 
 @Composable
-fun UserInfo(Name: String, SuccessGoal: Int, ContinueGoal: Int, SuccessPercent: Int, FriendCnt: Int, userId: String) {
+fun UserInfo(Name: String, SuccessGoal: Int, ContinueGoal: Int, SuccessPercent: Int, FriendCnt: Int, userId: String, Comment: String = "", isMine: Boolean = true) {
     var expanded by remember { mutableStateOf(false) }
+    var changeInfo by remember { mutableStateOf(false) }
+
+    if (changeInfo){
+
+    }
+
     BoxFrame {
         Column(
             modifier = Modifier
@@ -204,41 +210,44 @@ fun UserInfo(Name: String, SuccessGoal: Int, ContinueGoal: Int, SuccessPercent: 
                         contentScale = ContentScale.Crop
                     )
                     Text(
-                        text = "${Name}님\n반갑습니다:)",
+                        text = "${Name}님\n" + if (Comment.isEmpty()) "반갑습니다:)" else Comment,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = LightGreen
                     )
                 }
-                Column() {
-                    Icon(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clickable {
-                                // 드롭다운 메뉴
-                                expanded = !expanded
-                            },
-                        painter = painterResource(id = R.drawable.menu),
-                        contentDescription = "send",
-                        tint = LightGreen
-                    )
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier
-                    ) {
-                        DropdownMenuItem(
-                            onClick = {
-                                expanded = false
-                            }) {
-                            Text(text = "내 정보 수정")
-                        }
-                        DropdownMenuItem(
-                            onClick = {
-                                CopyToClipboard(App.instance, userId)
-                                expanded = false
-                            }) {
-                            Text(text = "내 ID 공유하기")
+                if (isMine) {
+                    Column() {
+                        Icon(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clickable {
+                                    // 드롭다운 메뉴
+                                    expanded = !expanded
+                                },
+                            painter = painterResource(id = R.drawable.menu),
+                            contentDescription = "send",
+                            tint = LightGreen
+                        )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                            modifier = Modifier
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    changeInfo = true
+                                    expanded = false
+                                }) {
+                                Text(text = "내 정보 수정")
+                            }
+                            DropdownMenuItem(
+                                onClick = {
+                                    CopyToClipboard(App.instance, userId)
+                                    expanded = false
+                                }) {
+                                Text(text = "내 ID 공유하기")
+                            }
                         }
                     }
                 }
@@ -265,7 +274,7 @@ fun Goal(text: String, count: String) {
 }
 
 @Composable
-fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean, GoalArr: MutableList<Boolean>) {
+fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean, GoalArr: MutableList<Boolean>, isMine: Boolean = true) {
     var isUpdate by rememberSaveable {
         mutableStateOf(false)
     }
@@ -299,7 +308,7 @@ fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean,
         )
     }
 
-    if (Goal == "NONE") {
+    if (Goal == "NONE" && isMine){
         var Goal = remember { mutableStateOf("") }
         BoxFrame {
             Column(
@@ -378,16 +387,22 @@ fun TodayGoal(navController: NavController, Goal: String, TodaySuccess: Boolean,
                                 .size(48.dp)
                                 .clickable {
                                     // api 호출
-                                    isUpdate = true
-                                    RetrofitManager.instance.successTodayGoal(
-                                        completion = { responseState ->
-                                            when (responseState) {
-                                                RESPONSE_STATE.OKAY -> {}
-                                                RESPONSE_STATE.FAIL -> {
-                                                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT).show()
+                                    if (isMine) {
+                                        isUpdate = true
+                                        RetrofitManager.instance.successTodayGoal(
+                                            completion = { responseState ->
+                                                when (responseState) {
+                                                    RESPONSE_STATE.OKAY -> {}
+                                                    RESPONSE_STATE.FAIL -> {
+                                                        Toast.makeText(
+                                                            App.instance,
+                                                            MESSAGE.ERROR,
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
                                                 }
-                                            }
-                                        })
+                                            })
+                                    }
                                 },
                             painter = painterResource(id = R.drawable.mission_before),
                             contentDescription = "send",

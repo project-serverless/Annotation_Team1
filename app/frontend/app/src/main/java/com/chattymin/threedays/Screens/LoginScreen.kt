@@ -35,21 +35,6 @@ fun LoginScreen(navController: NavController){
     var ID = remember { mutableStateOf("") }
     var PW = remember { mutableStateOf("") }
 
-
-    RetrofitManager.instance.friendDetails(
-        "Dongmin",
-        completion = { responseState ->
-            when (responseState) {
-                RESPONSE_STATE.OKAY -> {
-                }
-                RESPONSE_STATE.FAIL -> {
-                    Toast.makeText(App.instance, MESSAGE.ERROR, Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        })
-
-
 /*
     RetrofitManager.instance.mainpage(
         completion = { responseState ->

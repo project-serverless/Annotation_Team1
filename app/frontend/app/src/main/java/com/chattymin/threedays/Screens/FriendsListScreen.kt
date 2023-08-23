@@ -67,7 +67,6 @@ fun FriendListScreen(navController: NavController) {
                 .fillMaxSize()
                 .background(color = LightGreen)
                 .padding(horizontal = 24.dp),
-            //verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
@@ -85,7 +84,7 @@ fun FriendListScreen(navController: NavController) {
 @Composable
 fun FriendItem(navController: NavController, friendInfo: FriendInfo) {
     BoxFrame(modifier = Modifier.clickable{
-        navController.navigate(FriendNavigationScreens.FriendDetail.route)
+        navController.navigate(FriendNavigationScreens.FriendDetail.route+"/${friendInfo.UserId}")
     }) {
         Column(
             modifier = Modifier

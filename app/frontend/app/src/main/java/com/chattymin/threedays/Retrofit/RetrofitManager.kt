@@ -2,6 +2,7 @@ package com.chattymin.threedays.Retrofit
 
 import android.util.Log
 import com.chattymin.threedays.App
+import com.chattymin.threedays.Model.Friend
 import com.chattymin.threedays.Model.FriendInfo
 import com.chattymin.threedays.Model.MainPageInfo
 import com.chattymin.threedays.Utils.API
@@ -139,7 +140,6 @@ class RetrofitManager {
                     200 -> {
                         response.body()?.let {
                             val body = it.asJsonObject
-                            Log.e("TAG", "onResponse: ${body}", )
                             val data = body.get("body").asJsonObject
                             val goalArr = data.get("GoalArr").asJsonArray
                             val friendGoalArr = data.get("FriendGoalArr").asJsonArray
@@ -307,7 +307,7 @@ class RetrofitManager {
         })
     }
 
-    fun friendDetails(friendName: String, completion: (RESPONSE_STATE) -> Unit){
+    fun friendDetails(friendName: String, completion: (RESPONSE_STATE, friend: Friend?) -> Unit){
         val jsonObject = JsonObject()
         jsonObject.addProperty("userId", friendName)
 
@@ -315,7 +315,7 @@ class RetrofitManager {
 
         call.enqueue(object : retrofit2.Callback<JsonElement> {
             override fun onFailure(call: Call<JsonElement>, t: Throwable) {
-                completion(RESPONSE_STATE.FAIL)
+                completion(RESPONSE_STATE.FAIL, null)
             }
 
             override fun onResponse(
@@ -324,10 +324,30 @@ class RetrofitManager {
             ) {
                 when (response.code()) {
                     200 -> {
-                        completion(RESPONSE_STATE.OKAY)
+                        // 값 생성 후 리턴
+                        response.body()?.let {
+                            val body = it.asJsonObject
+                            val data = body.get("body").asJsonObject
+                            val friend = Friend(
+                                Name = data.get("Name").asString,
+                                Comment = data.get("Comment").asString,
+                                SuccessGoal = data.get("SuccessGoal").asInt,
+                                ContinueGoal = data.get("ContinueGoal").asInt,
+                                FriendCnt = data.get("FriendCnt").asInt,
+                                Goal = data.get("Goal").asString,
+                                GoalArr = mutableListOf(
+                                    data.get("GoalArr").asJsonArray[0].asBoolean,
+                                    data.get("GoalArr").asJsonArray[1].asBoolean,
+                                    data.get("GoalArr").asJsonArray[2].asBoolean
+                                ),
+                                TodaySuccess = data.get("TodaySuccess").asBoolean
+                            )
+
+                            completion(RESPONSE_STATE.OKAY, friend)
+                        }
                     }
                     else -> {
-                        completion(RESPONSE_STATE.FAIL)
+                        completion(RESPONSE_STATE.FAIL ,null)
                     }
                 }
             }

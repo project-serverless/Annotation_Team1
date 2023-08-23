@@ -39,12 +39,6 @@ class MainActivity : ComponentActivity() {
                 }
                 val navController = rememberNavController()
                 SetupNavGraph(navController = navController)
-                    //LoginScreen(navController = navController)
-                    //SignUpScreen(navController = navController)
-                    //MainScreen(navController = rememberNavController())
-                    //MainScreenView("main")
-                    //FriendDetailScreen()
-
             }
         }
     }
